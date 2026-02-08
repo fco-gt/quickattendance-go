@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"autoattendance-go/internal/domain"
 	"autoattendance-go/internal/dto"
 	"autoattendance-go/internal/service"
 	"net/http"
@@ -31,7 +32,11 @@ func (h *UserHandler) Invite(c *gin.Context) {
 	}
 
 	if err := h.svc.Invite(c.Request.Context(), agencyId, &req); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if err == domain.ErrUserExists {
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
 
@@ -48,7 +53,15 @@ func (h *UserHandler) Activate(c *gin.Context) {
 
 	res, err := h.svc.ActivateByCode(c.Request.Context(), &req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if err == domain.ErrInvalidActivationCode || err == domain.ErrActivationCodeExpired {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		if err == domain.ErrUserAlreadyActivated {
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
 
@@ -64,7 +77,11 @@ func (h *UserHandler) Login(c *gin.Context) {
 
 	res, err := h.svc.Login(c.Request.Context(), &req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if err == domain.ErrInvalidCredentials || err == domain.ErrUserNotActive {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
 
@@ -81,7 +98,11 @@ func (h *UserHandler) GetMe(c *gin.Context) {
 	user, err := h.svc.GetUserByID(c.Request.Context(), userID)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if err == domain.ErrUserNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
 
@@ -122,7 +143,11 @@ func (h *UserHandler) UpdateProfile(c *gin.Context) {
 
 	user, err = h.svc.UpdateUserProfile(c.Request.Context(), userID, &req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if err == domain.ErrUserNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
 
@@ -131,7 +156,11 @@ func (h *UserHandler) UpdateProfile(c *gin.Context) {
 
 func (h *UserHandler) Delete(c *gin.Context) {
 	idStr := c.Param("id")
-	userID := uuid.MustParse(idStr)
+	userID, err := uuid.Parse(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user ID"})
+		return
+	}
 	agencyID := c.MustGet("agency_id").(uuid.UUID)
 
 	if userID == uuid.Nil {
@@ -141,7 +170,11 @@ func (h *UserHandler) Delete(c *gin.Context) {
 
 	user, err := h.svc.GetUserByID(c.Request.Context(), userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if err == domain.ErrUserNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
 
@@ -152,7 +185,7 @@ func (h *UserHandler) Delete(c *gin.Context) {
 
 	err = h.svc.DeleteUser(c.Request.Context(), userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
 
@@ -169,7 +202,7 @@ func (h *UserHandler) List(c *gin.Context) {
 
 	users, err := h.svc.ListByAgencyID(c.Request.Context(), agencyID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
 

@@ -29,6 +29,11 @@ func NewUserService(userRepo domain.UserRepo, agencyRepo domain.AgencyRepo, jwt 
 }
 
 func (s *UserService) Invite(ctx context.Context, agencyID uuid.UUID, req *dto.InviteUserRequest) error {
+	// Verificar si el usuario ya existe
+	if _, err := s.userRepo.GetByEmail(ctx, req.Email); err == nil {
+		return domain.ErrUserExists
+	}
+
 	activationToken, err := security.GenerateRandomToken(32)
 	if err != nil {
 		return err

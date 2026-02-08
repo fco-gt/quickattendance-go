@@ -63,11 +63,19 @@ func (r *UserRepo) GetByActivationCode(ctx context.Context, code string) (*domai
 }
 
 func (r *UserRepo) Update(ctx context.Context, user *domain.User) error {
-	return r.db.WithContext(ctx).Session(&gorm.Session{FullSaveAssociations: true}).Save(user).Error
+	db, ok := ctx.Value("tx").(*gorm.DB)
+	if !ok {
+		db = r.db
+	}
+	return db.WithContext(ctx).Session(&gorm.Session{FullSaveAssociations: true}).Save(user).Error
 }
 
 func (r *UserRepo) Delete(ctx context.Context, id uuid.UUID) error {
-	return r.db.WithContext(ctx).Delete(&domain.User{}, id).Error
+	db, ok := ctx.Value("tx").(*gorm.DB)
+	if !ok {
+		db = r.db
+	}
+	return db.WithContext(ctx).Delete(&domain.User{}, id).Error
 }
 
 func (r *UserRepo) ListByAgencyID(ctx context.Context, agencyID uuid.UUID) ([]*domain.User, error) {
