@@ -21,7 +21,7 @@ func NewRouter(
 	userHandler := NewUserHandler(userSvc)
 
 	// Middlewares
-	authMidleware := middleware.Auth(jwtSvc)
+	authMiddleware := middleware.Auth(jwtSvc)
 
 	// Basic CORS
 	r.Use(func(c *gin.Context) {
@@ -54,9 +54,9 @@ func NewRouter(
 
 			// Protected routes
 			protected := agencies.Group("")
-			protected.Use(authMidleware)
+			protected.Use(authMiddleware)
 			{
-				agencies.PUT("", middleware.RequireRole(domain.RoleAdmin), agencyHandler.Update)
+				protected.PUT("", middleware.RequireRole(domain.RoleAdmin), agencyHandler.Update)
 			}
 
 		}
@@ -69,13 +69,13 @@ func NewRouter(
 
 			// Protected routes
 			protected := users.Group("")
-			protected.Use(authMidleware)
+			protected.Use(authMiddleware)
 			{
-				users.GET("/me", userHandler.GetMe)
-				users.POST("/invite", middleware.RequireRole(domain.RoleAdmin), userHandler.Invite)
-				users.PUT("/:id", middleware.RequireRole(domain.RoleAdmin), userHandler.UpdateProfile)
-				users.DELETE("/:id", middleware.RequireRole(domain.RoleAdmin), userHandler.Delete)
-				users.GET("/list", middleware.RequireRole(domain.RoleAdmin), userHandler.List)
+				protected.GET("/me", userHandler.GetMe)
+				protected.POST("/invite", middleware.RequireRole(domain.RoleAdmin), userHandler.Invite)
+				protected.PUT("/:id", middleware.RequireRole(domain.RoleAdmin), userHandler.UpdateProfile)
+				protected.DELETE("/:id", middleware.RequireRole(domain.RoleAdmin), userHandler.Delete)
+				protected.GET("/list", middleware.RequireRole(domain.RoleAdmin), userHandler.List)
 			}
 		}
 	}

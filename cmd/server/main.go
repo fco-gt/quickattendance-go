@@ -6,6 +6,7 @@ import (
 	"autoattendance-go/internal/repository"
 	"autoattendance-go/internal/service"
 	"autoattendance-go/internal/transport/http/handlers"
+	"autoattendance-go/pkg/logger"
 	"autoattendance-go/pkg/security"
 	"fmt"
 	"log"
@@ -21,6 +22,9 @@ func main() {
 		log.Println("no .env file found")
 	}
 	cfg := config.Load()
+
+	// Logger Setup
+	logger.Setup(cfg.Env)
 
 	// Database
 	db, err := gorm.Open(postgres.Open(cfg.DatabaseURL), &gorm.Config{})

@@ -102,7 +102,7 @@ func (s *UserService) Login(ctx context.Context, req *dto.LoginUserRequest) (*dt
 
 	ok, err := s.hasher.Compare(ctx, user.PasswordHash, req.Password)
 	if err != nil {
-		return nil, err
+		return nil, domain.ErrInvalidCredentials
 	}
 
 	if !ok {
