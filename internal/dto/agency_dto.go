@@ -34,6 +34,10 @@ type AgencyResponse struct {
 }
 
 func ToAgencyResponse(agency *domain.Agency) *AgencyResponse {
+	if agency == nil {
+		return nil
+	}
+
 	return &AgencyResponse{
 		ID:        agency.ID,
 		Name:      agency.Name,

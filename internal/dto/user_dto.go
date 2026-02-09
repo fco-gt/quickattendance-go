@@ -58,6 +58,10 @@ type AuthResponse struct {
 }
 
 func ToUserResponse(user *domain.User) *UserResponse {
+	if user == nil {
+		return nil
+	}
+
 	return &UserResponse{
 		ID:               user.ID,
 		FirstName:        user.FirstName,
@@ -74,6 +78,13 @@ func ToUserResponse(user *domain.User) *UserResponse {
 }
 
 func ToAuthResponse(user *domain.User, token string) *AuthResponse {
+	if user == nil {
+		return nil
+	}
+	if token == "" {
+		return nil
+	}
+
 	return &AuthResponse{
 		Token: token,
 		User:  *ToUserResponse(user),

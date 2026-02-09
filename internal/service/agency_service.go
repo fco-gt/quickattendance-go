@@ -19,7 +19,10 @@ type AgencyService struct {
 func NewAgencyService(agencyRepo domain.AgencyRepo, userRepo domain.UserRepo, hasher *security.PasswordHasher, txManager domain.Transactor) *AgencyService {
 	return &AgencyService{
 		agencyRepo: agencyRepo,
-		userRepo:   userRepo, hasher: hasher, txManager: txManager}
+		userRepo:   userRepo,
+		hasher:     hasher,
+		txManager:  txManager,
+	}
 }
 
 func (s *AgencyService) Register(ctx context.Context, req *dto.RegisterAgencyRequest) (*dto.AgencyResponse, error) {
