@@ -10,6 +10,9 @@ import (
 	"autoattendance-go/pkg/security"
 	"fmt"
 	"log"
+	"log/slog"
+	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -26,10 +29,21 @@ func main() {
 	// Logger Setup
 	logger.Setup(cfg.Env)
 
-	// Database
-	db, err := gorm.Open(postgres.Open(cfg.DatabaseURL), &gorm.Config{})
+	// Database with retries (Docker might take time so we need to wait)
+	var db *gorm.DB
+	var err error
+	for i := range 10 {
+		db, err = gorm.Open(postgres.Open(cfg.DatabaseURL), &gorm.Config{})
+		if err == nil {
+			break
+		}
+		slog.Info("Waiting for database...", "attempt", i+1)
+		time.Sleep(2 * time.Second)
+	}
+
 	if err != nil {
-		log.Fatal("failed to connect to database:", err)
+		slog.Error("failed to connect to database", "error", err)
+		os.Exit(1)
 	}
 
 	db.AutoMigrate(&domain.Agency{}, &domain.User{})
