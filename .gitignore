@@ -4,5 +4,4 @@
 !.env.example
 
 # Docker
-.dockerignore
-.docker-compose.yml
+docker-compose.yml
