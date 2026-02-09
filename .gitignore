@@ -2,3 +2,7 @@
 .env
 .env.*
 !.env.example
+
+# Docker
+.dockerignore
+.docker-compose.yml
