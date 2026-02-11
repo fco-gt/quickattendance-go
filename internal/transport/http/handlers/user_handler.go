@@ -90,12 +90,13 @@ func (h *UserHandler) Login(c *gin.Context) {
 
 func (h *UserHandler) GetMe(c *gin.Context) {
 	userID := c.MustGet("user_id").(uuid.UUID)
-	if userID == uuid.Nil {
+	agencyID := c.MustGet("agency_id").(uuid.UUID)
+	if userID == uuid.Nil || agencyID == uuid.Nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": "not authorized"})
 		return
 	}
 
-	user, err := h.svc.GetUserByID(c.Request.Context(), userID)
+	user, err := h.svc.GetUserByID(c.Request.Context(), agencyID, userID)
 
 	if err != nil {
 		if err == domain.ErrUserNotFound {
@@ -114,24 +115,8 @@ func (h *UserHandler) UpdateProfile(c *gin.Context) {
 	agencyID := c.MustGet("agency_id").(uuid.UUID)
 
 	userID, err := uuid.Parse(idStr)
-	if err != nil {
+	if err != nil || userID == uuid.Nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "user ID is invalid"})
-		return
-	}
-
-	if userID == uuid.Nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "user ID is invalid"})
-		return
-	}
-
-	user, err := h.svc.GetUserByID(c.Request.Context(), userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if agencyID != user.AgencyID {
-		c.JSON(http.StatusForbidden, gin.H{"error": "not authorized"})
 		return
 	}
 
@@ -141,7 +126,7 @@ func (h *UserHandler) UpdateProfile(c *gin.Context) {
 		return
 	}
 
-	user, err = h.svc.UpdateUserProfile(c.Request.Context(), userID, &req)
+	user, err := h.svc.UpdateUserProfile(c.Request.Context(), agencyID, userID, &req)
 	if err != nil {
 		if err == domain.ErrUserNotFound {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
@@ -157,34 +142,18 @@ func (h *UserHandler) UpdateProfile(c *gin.Context) {
 func (h *UserHandler) Delete(c *gin.Context) {
 	idStr := c.Param("id")
 	userID, err := uuid.Parse(idStr)
-	if err != nil {
+	if err != nil || userID == uuid.Nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user ID"})
 		return
 	}
 	agencyID := c.MustGet("agency_id").(uuid.UUID)
 
-	if userID == uuid.Nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user ID"})
-		return
-	}
-
-	user, err := h.svc.GetUserByID(c.Request.Context(), userID)
+	err = h.svc.DeleteUser(c.Request.Context(), agencyID, userID)
 	if err != nil {
 		if err == domain.ErrUserNotFound {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
-		return
-	}
-
-	if agencyID != user.AgencyID {
-		c.JSON(http.StatusForbidden, gin.H{"error": "not authorized"})
-		return
-	}
-
-	err = h.svc.DeleteUser(c.Request.Context(), userID)
-	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}

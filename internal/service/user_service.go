@@ -122,18 +122,26 @@ func (s *UserService) Login(ctx context.Context, req *dto.LoginUserRequest) (*dt
 	return dto.ToAuthResponse(user, token), nil
 }
 
-func (s *UserService) GetUserByID(ctx context.Context, userID uuid.UUID) (*dto.UserResponse, error) {
+func (s *UserService) GetUserByID(ctx context.Context, agencyID uuid.UUID, userID uuid.UUID) (*dto.UserResponse, error) {
 	user, err := s.userRepo.GetByID(ctx, userID)
 	if err != nil {
+		return nil, domain.ErrUserNotFound
+	}
+
+	if user.AgencyID != agencyID {
 		return nil, domain.ErrUserNotFound
 	}
 
 	return dto.ToUserResponse(user), nil
 }
 
-func (s *UserService) UpdateUserProfile(ctx context.Context, userID uuid.UUID, req *dto.UpdateUserRequest) (*dto.UserResponse, error) {
+func (s *UserService) UpdateUserProfile(ctx context.Context, agencyID uuid.UUID, userID uuid.UUID, req *dto.UpdateUserRequest) (*dto.UserResponse, error) {
 	user, err := s.userRepo.GetByID(ctx, userID)
 	if err != nil {
+		return nil, domain.ErrUserNotFound
+	}
+
+	if user.AgencyID != agencyID {
 		return nil, domain.ErrUserNotFound
 	}
 
@@ -168,9 +176,13 @@ func (s *UserService) UpdateUserProfile(ctx context.Context, userID uuid.UUID, r
 	return dto.ToUserResponse(user), nil
 }
 
-func (s *UserService) DeleteUser(ctx context.Context, userID uuid.UUID) error {
+func (s *UserService) DeleteUser(ctx context.Context, agencyID uuid.UUID, userID uuid.UUID) error {
 	user, err := s.userRepo.GetByID(ctx, userID)
 	if err != nil {
+		return domain.ErrUserNotFound
+	}
+
+	if user.AgencyID != agencyID {
 		return domain.ErrUserNotFound
 	}
 
