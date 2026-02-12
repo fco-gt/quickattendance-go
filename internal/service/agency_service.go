@@ -76,7 +76,6 @@ func (s *AgencyService) Register(ctx context.Context, req *dto.RegisterAgencyReq
 
 func (s *AgencyService) Update(ctx context.Context, id uuid.UUID, req *dto.UpdateAgencyRequest) (*dto.AgencyResponse, error) {
 	agency, err := s.agencyRepo.GetByID(ctx, id)
-
 	if err != nil {
 		return nil, domain.ErrAgencyNotFound
 	}
