@@ -80,7 +80,7 @@ func NewRouter(
 			{
 				protected.GET("/me", userHandler.GetMe)
 				protected.POST("/invite", middleware.RequireRole(domain.RoleAdmin), userHandler.Invite)
-				protected.GET("/:id", userHandler.GetByID)
+				protected.GET("/:id", middleware.RequireRole(domain.RoleAdmin), userHandler.GetByID)
 				protected.PUT("/:id", middleware.RequireRole(domain.RoleAdmin), userHandler.UpdateProfile)
 				protected.DELETE("/:id", middleware.RequireRole(domain.RoleAdmin), userHandler.Delete)
 				protected.GET("/list", middleware.RequireRole(domain.RoleAdmin), userHandler.List)
