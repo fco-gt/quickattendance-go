@@ -67,7 +67,12 @@ func (h *AttendanceHandler) List(c *gin.Context) {
 	// Security: Employees can only see their own attendance
 	role := c.MustGet("user_role").(domain.Role)
 	if role == domain.RoleEmployee {
-		params.UserID = c.MustGet("user_id").(uuid.UUID)
+		params.UserID = c.MustGet("user_id").(uuid.UUID).String()
+	} else if params.UserID != "" {
+		if _, err := uuid.Parse(params.UserID); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user_id format"})
+			return
+		}
 	}
 
 	res, err := h.svc.GetAgencyAttendances(c.Request.Context(), agencyID, &params)

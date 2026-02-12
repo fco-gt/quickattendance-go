@@ -60,8 +60,8 @@ func ToAttendanceResponse(attendance *domain.Attendance) *AttendanceResponse {
 
 type AttendanceListParams struct {
 	PaginationParams
-	UserID    uuid.UUID `form:"user_id" binding:"omitempty"`
-	StartDate string    `form:"start_date" binding:"omitempty"` // Format: YYYY-MM-DD
-	EndDate   string    `form:"end_date" binding:"omitempty"`   // Format: YYYY-MM-DD
-	Status    string    `form:"status" binding:"omitempty"`
+	UserID    string `form:"user_id" binding:"omitempty"`
+	StartDate string `form:"start_date" binding:"omitempty"` // Format: YYYY-MM-DD
+	EndDate   string `form:"end_date" binding:"omitempty"`   // Format: YYYY-MM-DD
+	Status    string `form:"status" binding:"omitempty"`
 }

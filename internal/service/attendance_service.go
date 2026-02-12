@@ -116,10 +116,15 @@ func (s *AttendanceService) MarkAttendance(ctx context.Context, req *dto.MarkAtt
 
 func (s *AttendanceService) GetAgencyAttendances(ctx context.Context, agencyID uuid.UUID, params *dto.AttendanceListParams) ([]*dto.AttendanceResponse, error) {
 	filter := domain.AttendanceFilter{
-		UserID: params.UserID,
 		Page:   params.Page,
 		Limit:  params.Limit,
 		Status: domain.AttendanceStatus(params.Status),
+	}
+
+	if params.UserID != "" {
+		if id, err := uuid.Parse(params.UserID); err == nil {
+			filter.UserID = id
+		}
 	}
 
 	if params.StartDate != "" {
