@@ -12,6 +12,7 @@ import (
 func NewRouter(
 	agencySvc *service.AgencyService,
 	userSvc *service.UserService,
+	scheduleSvc *service.ScheduleService,
 	jwtSvc *security.JWTService,
 ) *gin.Engine {
 	r := gin.Default()
@@ -19,6 +20,7 @@ func NewRouter(
 	// Handlers
 	agencyHandler := NewAgencyHandler(agencySvc)
 	userHandler := NewUserHandler(userSvc)
+	scheduleHandler := NewScheduleHandler(scheduleSvc)
 
 	// Middlewares
 	authMiddleware := middleware.Auth(jwtSvc)
@@ -58,7 +60,6 @@ func NewRouter(
 			{
 				protected.PUT("", middleware.RequireRole(domain.RoleAdmin), agencyHandler.Update)
 			}
-
 		}
 
 		// Users routes
@@ -73,9 +74,28 @@ func NewRouter(
 			{
 				protected.GET("/me", userHandler.GetMe)
 				protected.POST("/invite", middleware.RequireRole(domain.RoleAdmin), userHandler.Invite)
+				protected.GET("/:id", userHandler.GetByID)
 				protected.PUT("/:id", middleware.RequireRole(domain.RoleAdmin), userHandler.UpdateProfile)
 				protected.DELETE("/:id", middleware.RequireRole(domain.RoleAdmin), userHandler.Delete)
 				protected.GET("/list", middleware.RequireRole(domain.RoleAdmin), userHandler.List)
+			}
+		}
+
+		// Schedules routes
+		schedules := v1.Group("schedules")
+		schedules.Use(authMiddleware)
+		{
+			schedules.GET("/applicable", scheduleHandler.GetApplicable)
+			schedules.GET("/list", scheduleHandler.List)
+			schedules.GET("/:id", scheduleHandler.GetByID)
+
+			// Admin only
+			adminOnly := schedules.Group("")
+			adminOnly.Use(middleware.RequireRole(domain.RoleAdmin))
+			{
+				adminOnly.POST("", scheduleHandler.Create)
+				adminOnly.PUT("/:id", scheduleHandler.Update)
+				adminOnly.DELETE("/:id", scheduleHandler.Delete)
 			}
 		}
 	}

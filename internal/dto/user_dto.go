@@ -90,3 +90,14 @@ func ToAuthResponse(user *domain.User, token string) *AuthResponse {
 		User:  *ToUserResponse(user),
 	}
 }
+
+type PaginationParams struct {
+	Page  int `form:"page,default=1" binding:"omitempty,min=1"`
+	Limit int `form:"limit,default=10" binding:"omitempty,min=1,max=100"`
+}
+
+type UserListParams struct {
+	PaginationParams
+	Status string `form:"status" binding:"omitempty"`
+	Search string `form:"search" binding:"omitempty"`
+}

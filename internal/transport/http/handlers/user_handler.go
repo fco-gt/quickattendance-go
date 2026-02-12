@@ -110,6 +110,29 @@ func (h *UserHandler) GetMe(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+func (h *UserHandler) GetByID(c *gin.Context) {
+	idStr := c.Param("id")
+	userID, err := uuid.Parse(idStr)
+	if err != nil || userID == uuid.Nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user ID"})
+		return
+	}
+
+	agencyID := c.MustGet("agency_id").(uuid.UUID)
+
+	user, err := h.svc.GetUserByID(c.Request.Context(), agencyID, userID)
+	if err != nil {
+		if err == domain.ErrUserNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+}
+
 func (h *UserHandler) UpdateProfile(c *gin.Context) {
 	idStr := c.Param("id")
 	agencyID := c.MustGet("agency_id").(uuid.UUID)
@@ -169,7 +192,14 @@ func (h *UserHandler) List(c *gin.Context) {
 		return
 	}
 
-	users, err := h.svc.ListByAgencyID(c.Request.Context(), agencyID)
+	var params dto.UserListParams
+	if err := c.ShouldBindQuery(&params); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Now passing params for filtering and pagination
+	users, err := h.svc.ListByAgencyID(c.Request.Context(), agencyID, &params)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return

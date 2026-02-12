@@ -61,6 +61,13 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
+type UserFilter struct {
+	Status string
+	Search string
+	Page   int
+	Limit  int
+}
+
 type UserRepo interface {
 	Create(ctx context.Context, user *User) error
 	GetByID(ctx context.Context, id uuid.UUID) (*User, error)
@@ -68,5 +75,5 @@ type UserRepo interface {
 	GetByActivationCode(ctx context.Context, code string) (*User, error)
 	Update(ctx context.Context, user *User) error
 	Delete(ctx context.Context, id uuid.UUID) error
-	ListByAgencyID(ctx context.Context, agencyID uuid.UUID) ([]*User, error)
+	ListByAgencyID(ctx context.Context, agencyID uuid.UUID, filter UserFilter) ([]*User, error)
 }

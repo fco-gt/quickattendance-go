@@ -193,8 +193,15 @@ func (s *UserService) DeleteUser(ctx context.Context, agencyID uuid.UUID, userID
 	return nil
 }
 
-func (s *UserService) ListByAgencyID(ctx context.Context, agencyID uuid.UUID) ([]*dto.UserResponse, error) {
-	users, err := s.userRepo.ListByAgencyID(ctx, agencyID)
+func (s *UserService) ListByAgencyID(ctx context.Context, agencyID uuid.UUID, params *dto.UserListParams) ([]*dto.UserResponse, error) {
+	filter := domain.UserFilter{
+		Status: params.Status,
+		Search: params.Search,
+		Page:   params.Page,
+		Limit:  params.Limit,
+	}
+
+	users, err := s.userRepo.ListByAgencyID(ctx, agencyID, filter)
 	if err != nil {
 		return nil, err
 	}

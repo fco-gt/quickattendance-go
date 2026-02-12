@@ -78,9 +78,25 @@ func (r *UserRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	return db.WithContext(ctx).Delete(&domain.User{}, id).Error
 }
 
-func (r *UserRepo) ListByAgencyID(ctx context.Context, agencyID uuid.UUID) ([]*domain.User, error) {
+func (r *UserRepo) ListByAgencyID(ctx context.Context, agencyID uuid.UUID, filter domain.UserFilter) ([]*domain.User, error) {
 	var users []*domain.User
-	if err := r.db.WithContext(ctx).Where("agency_id = ?", agencyID).Find(&users).Error; err != nil {
+	query := r.db.WithContext(ctx).Where("agency_id = ?", agencyID)
+
+	if filter.Status != "" {
+		query = query.Where("status = ?", filter.Status)
+	}
+	if filter.Search != "" {
+		searchTerm := "%" + filter.Search + "%"
+		query = query.Where("first_name ILIKE ? OR last_name ILIKE ? OR email ILIKE ?", searchTerm, searchTerm, searchTerm)
+	}
+
+	// Pagination
+	if filter.Limit > 0 {
+		offset := (filter.Page - 1) * filter.Limit
+		query = query.Offset(offset).Limit(filter.Limit)
+	}
+
+	if err := query.Find(&users).Error; err != nil {
 		return nil, err
 	}
 	return users, nil
