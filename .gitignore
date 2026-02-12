@@ -5,3 +5,6 @@
 
 # Docker
 docker-compose.yml
+
+# Local development
+docker-compose.override.yml

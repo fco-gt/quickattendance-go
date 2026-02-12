@@ -1,0 +1,51 @@
+services:
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: quickattendance-mq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBIT_USER:-user}
+      RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD:-password}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db:
+    image: postgres:15-alpine
+    container_name: quickattendance-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_DB: ${DB_NAME:-quickattendance}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERSource:-user} -d ${DB_NAME:-quickattendance}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: quickattendance-app
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: postgres://${DB_USER:-user}:${DB_PASSWORD:-password}@db:5432/${DB_NAME:-quickattendance}?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET}
+      HTTP_PORT: ${HTTP_PORT:-8080}
+      ACCESS_TOKEN_TTL: ${ACCESS_TOKEN_TTL:-15m}
+      BCRYPT_COST: ${BCRYPT_COST:-12}
+
+volumes:
+  postgres_data:
