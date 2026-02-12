@@ -26,6 +26,59 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Rate Limit",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "ddc9c33e-5037-4317-9caa-1e6e7cd535d5",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "5bc8ea1e-7194-4ba8-9e79-cd5e07211d6b",
+                "exec": [
+                  "if (pm.response.code === 429) {\r",
+                  "    pm.test(\"Rate Limit Alcanzado\", function () {\r",
+                  "        pm.expect(pm.response.json().error).to.eql(\"Too many requests\");\r",
+                  "    });\r",
+                  "} else {\r",
+                  "    pm.test(\"Petición Exitosa\", function () {\r",
+                  "        pm.expect(pm.response.code).to.equal(200);\r",
+                  "    });\r",
+                  "}\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "id": "76f51609-c8c5-4d88-8a73-7d29915a4cff",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "response": []
         }
       ],
       "id": "f076ca79-ee27-4626-9113-74331a1ebbee"
@@ -181,7 +234,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"activation_token\": \"EL_CODIGO_DE_LA_DB\",\n  \"password\": \"newpassword123\",\n  \"profile\": {\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Pérez\"\n  }\n}",
+              "raw": "{\n  \"activation_token\": \"{{activation_token}}\",\n  \"password\": \"{{new_password}}\",\n  \"profile\": {\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Pérez\"\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -238,7 +291,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "18edacd1-0ba3-4aba-92a9-7b62cf8b7b59"
+                  "value": "32240035-23df-4f2a-a5b9-f93998507b8c"
                 }
               ]
             }
@@ -272,7 +325,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "18edacd1-0ba3-4aba-92a9-7b62cf8b7b59"
+                  "value": "32240035-23df-4f2a-a5b9-f93998507b8c"
                 }
               ]
             }
@@ -297,7 +350,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": ""
+                  "value": "32240035-23df-4f2a-a5b9-f93998507b8c"
                 }
               ]
             }
@@ -383,7 +436,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/schedules/applicable?date=2024-05-20&user_id=",
+              "raw": "{{base_url}}/schedules/applicable?date=2024-05-20&user_id=32240035-23df-4f2a-a5b9-f93998507b8c",
               "host": [
                 "{{base_url}}"
               ],
@@ -394,11 +447,13 @@
               "query": [
                 {
                   "key": "date",
-                  "value": "2024-05-20"
+                  "value": "2024-05-20",
+                  "uuid": "a370b255-d1ce-4b68-af61-7e65c4f0957c"
                 },
                 {
                   "key": "user_id",
-                  "value": ""
+                  "value": "32240035-23df-4f2a-a5b9-f93998507b8c",
+                  "uuid": "e895db55-2ce4-40e4-9839-57bac94a5387"
                 }
               ]
             }
@@ -423,7 +478,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": ""
+                  "value": "7eb05d1e-c6a5-475f-8901-836f362f2242"
                 }
               ]
             }
@@ -484,7 +539,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "17745df8-4a76-4b7d-987d-3da7a9b9b59c"
+                  "value": "7eb05d1e-c6a5-475f-8901-836f362f2242"
                 }
               ]
             }
@@ -607,13 +662,13 @@
   },
   "variable": [
     {
-      "id": "03ef1741-0943-4cff-b607-436c3d2083ce",
+      "id": "5c2c18d6-343f-4b80-a9f2-d6990e2351d9",
       "key": "base_url",
       "value": "http://localhost:8080/api/v1",
       "type": "string"
     },
     {
-      "id": "627c2577-0061-4bf3-bb37-0bf16f90a33a",
+      "id": "1e58cdc9-cd88-4506-9967-490cd82a1bb4",
       "key": "token",
       "value": "",
       "type": "string"

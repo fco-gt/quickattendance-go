@@ -26,7 +26,7 @@ Esta guía detalla los pasos para probar de manera integral la API de QuickAtten
       "address": "Calle Falsa 123",
       "phone": "+123456789",
       "admin_email": "admin@empresa.com",
-      "password": "password123"
+      "password": "YOUR_PASSWORD"
     }
     ```
 *   **Nota**: Este endpoint crea la agencia y al primer usuario con rol `admin`.
@@ -38,7 +38,7 @@ Esta guía detalla los pasos para probar de manera integral la API de QuickAtten
     ```json
     {
       "email": "admin@empresa.com",
-      "password": "password123"
+      "password": "YOUR_PASSWORD"
     }
     ```
 *   **Acción**: Copia el `token` de la respuesta y úsalo para las siguientes peticiones en el header `Authorization: Bearer <TOKEN>`.
@@ -55,7 +55,7 @@ Esta guía detalla los pasos para probar de manera integral la API de QuickAtten
       "last_name": "Pérez"
     }
     ```
-*   **Resultado**: En un entorno real llegaría un correo. En desarrollo, puedes buscar el `activation_code` en la base de datos de la tabla `users`.
+*   **Nota**: En desarrollo, el correo no se envía físicamente. Debes tener corriendo el **Worker** (`go run cmd/worker/main.go`) para ver el mensaje de invitación en la consola, o buscar el `activation_code` directamente en la base de datos de la tabla `users`.
 
 ### 5. Activación de Cuenta (Empleado)
 *   **Método**: `POST`
@@ -63,8 +63,8 @@ Esta guía detalla los pasos para probar de manera integral la API de QuickAtten
 *   **Payload**:
     ```json
     {
-      "activation_token": "EL_CODIGO_DE_LA_DB",
-      "password": "newpassword123",
+      "activation_token": "YOUR_ACTIVATION_TOKEN",
+      "password": "YOUR_NEW_PASSWORD",
       "profile": {
         "first_name": "Juan",
         "last_name": "Pérez Updated"
