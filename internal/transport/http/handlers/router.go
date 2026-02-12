@@ -7,6 +7,7 @@ import (
 	"quickattendance-go/pkg/security"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/time/rate"
 )
 
 func NewRouter(
@@ -15,8 +16,11 @@ func NewRouter(
 	scheduleSvc *service.ScheduleService,
 	attendanceSvc *service.AttendanceService,
 	jwtSvc *security.JWTService,
+	rps rate.Limit,
+	burst int,
 ) *gin.Engine {
 	r := gin.Default()
+	r.Use(middleware.RateLimitByIP(rps, burst))
 
 	// Handlers
 	agencyHandler := NewAgencyHandler(agencySvc)

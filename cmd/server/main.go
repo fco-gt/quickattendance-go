@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"golang.org/x/time/rate"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -75,8 +76,12 @@ func main() {
 	scheduleSvc := service.NewScheduleService(scheduleRepo, userRepo, txManager)
 	attendanceSvc := service.NewAttendanceService(attendanceRepo, userRepo, scheduleSvc, txManager)
 
+	// Rate Limiting Config (Production values)
+	rps := rate.Limit(5)
+	burst := 10
+
 	// Router
-	r := handlers.NewRouter(agencySvc, userSvc, scheduleSvc, attendanceSvc, jwtService)
+	r := handlers.NewRouter(agencySvc, userSvc, scheduleSvc, attendanceSvc, jwtService, rps, burst)
 
 	// Server
 	fmt.Printf("Server running on port %s\n", cfg.HTTPPort)
