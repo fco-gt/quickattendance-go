@@ -13,6 +13,7 @@ func NewRouter(
 	agencySvc *service.AgencyService,
 	userSvc *service.UserService,
 	scheduleSvc *service.ScheduleService,
+	attendanceSvc *service.AttendanceService,
 	jwtSvc *security.JWTService,
 ) *gin.Engine {
 	r := gin.Default()
@@ -21,6 +22,7 @@ func NewRouter(
 	agencyHandler := NewAgencyHandler(agencySvc)
 	userHandler := NewUserHandler(userSvc)
 	scheduleHandler := NewScheduleHandler(scheduleSvc)
+	attendanceHandler := NewAttendanceHandler(attendanceSvc)
 
 	// Middlewares
 	authMiddleware := middleware.Auth(jwtSvc)
@@ -97,6 +99,14 @@ func NewRouter(
 				adminOnly.PUT("/:id", scheduleHandler.Update)
 				adminOnly.DELETE("/:id", scheduleHandler.Delete)
 			}
+		}
+
+		// Attendance routes
+		attendance := v1.Group("attendance")
+		attendance.Use(authMiddleware)
+		{
+			attendance.POST("/mark", attendanceHandler.Mark)
+			attendance.GET("/list", attendanceHandler.List)
 		}
 	}
 	return r

@@ -5,41 +5,149 @@ import (
 	"autoattendance-go/internal/dto"
 	"context"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type AttendanceService struct {
 	attendanceRepo domain.AttendanceRepo
 	userRepo       domain.UserRepo
-	agencyRepo     domain.AgencyRepo
+	scheduleSvc    *ScheduleService
+	transactor     domain.Transactor
 }
 
-func NewAttendanceService(attendanceRepo domain.AttendanceRepo, userRepo domain.UserRepo, agencyRepo domain.AgencyRepo) *AttendanceService {
+func NewAttendanceService(
+	attendanceRepo domain.AttendanceRepo,
+	userRepo domain.UserRepo,
+	scheduleSvc *ScheduleService,
+	transactor domain.Transactor,
+) *AttendanceService {
 	return &AttendanceService{
 		attendanceRepo: attendanceRepo,
 		userRepo:       userRepo,
-		agencyRepo:     agencyRepo,
+		scheduleSvc:    scheduleSvc,
+		transactor:     transactor,
 	}
 }
 
 func (s *AttendanceService) MarkAttendance(ctx context.Context, req *dto.MarkAttendanceRequest) (*dto.AttendanceResponse, error) {
-	// Validate user and agency
-	user, err := s.userRepo.GetByID(ctx, req.UserID)
+	now := time.Now()
+
+	// 1. Get schedule for the user and today
+	sched, err := s.scheduleSvc.GetApplicableSchedule(ctx, req.AgencyID, req.UserID, now)
 	if err != nil {
-		return nil, domain.ErrUserNotFound
+		return nil, err
 	}
 
-	agency, err := s.agencyRepo.GetByID(ctx, req.AgencyID)
+	var response *dto.AttendanceResponse
+
+	err = s.transactor.WithinTransaction(ctx, func(txCtx context.Context) error {
+		// 2. Check for existing attendance today
+		existing, err := s.attendanceRepo.GetTodayByUserID(txCtx, req.AgencyID, req.UserID)
+		if err != nil {
+			return err
+		}
+
+		if req.Type == domain.TypeIn {
+			if existing != nil {
+				return domain.ErrAttendanceExists
+			}
+
+			// Parse schedule times for the current date
+			entryTime := parseTimeMinutes(now, sched.EntryTimeMinutes)
+			exitTime := parseTimeMinutes(now, sched.ExitTimeMinutes)
+
+			// Calculate Status
+			status := domain.StatusPresent
+			lateLimit := entryTime.Add(time.Duration(sched.GracePeriodMinutes) * time.Minute)
+			if now.After(lateLimit) {
+				status = domain.StatusLate
+			}
+
+			attendance := &domain.Attendance{
+				UserID:            req.UserID,
+				AgencyID:          req.AgencyID,
+				CheckInTime:       now,
+				ScheduleEntryTime: entryTime,
+				ScheduleExitTime:  exitTime,
+				Date:              now,
+				Status:            status,
+				MethodIn:          req.Method,
+				Notes:             req.Notes,
+				Latitude:          req.Latitude,
+				Longitude:         req.Longitude,
+			}
+
+			if err := s.attendanceRepo.Create(txCtx, attendance); err != nil {
+				return err
+			}
+			response = dto.ToAttendanceResponse(attendance)
+			return nil
+		}
+
+		// Type OUT
+		if existing == nil {
+			return domain.ErrAttendanceNotFound
+		}
+
+		if existing.CheckOutTime != nil {
+			return domain.ErrAttendanceExists // Already checked out
+		}
+
+		existing.CheckOutTime = &now
+		existing.MethodOut = &req.Method
+
+		// If he leaves early? Optional logic
+		// if now.Before(existing.ScheduleExitTime) { ... }
+
+		if err := s.attendanceRepo.Update(txCtx, existing); err != nil {
+			return err
+		}
+		response = dto.ToAttendanceResponse(existing)
+		return nil
+	})
+
 	if err != nil {
-		return nil, domain.ErrAgencyNotFound
+		return nil, err
 	}
 
-	if user == nil || agency == nil {
-		return nil, domain.ErrInvalidUserOrAgency
+	return response, nil
+}
+
+func (s *AttendanceService) GetAgencyAttendances(ctx context.Context, agencyID uuid.UUID, params *dto.AttendanceListParams) ([]*dto.AttendanceResponse, error) {
+	filter := domain.AttendanceFilter{
+		UserID: params.UserID,
+		Page:   params.Page,
+		Limit:  params.Limit,
+		Status: domain.AttendanceStatus(params.Status),
 	}
 
-	today := time.Now()
+	if params.StartDate != "" {
+		if t, err := time.Parse("2006-01-02", params.StartDate); err == nil {
+			filter.StartDate = &t
+		}
+	}
+	if params.EndDate != "" {
+		if t, err := time.Parse("2006-01-02", params.EndDate); err == nil {
+			filter.EndDate = &t
+		}
+	}
 
-	// Check for an schedule for today
-	//  TODO
+	attendances, err := s.attendanceRepo.List(ctx, agencyID, filter)
+	if err != nil {
+		return nil, err
+	}
 
+	responses := make([]*dto.AttendanceResponse, len(attendances))
+	for i, a := range attendances {
+		responses[i] = dto.ToAttendanceResponse(a)
+	}
+	return responses, nil
+}
+
+// Helper to set hours/minutes on a base date
+func parseTimeMinutes(base time.Time, minutes int) time.Time {
+	hours := minutes / 60
+	mins := minutes % 60
+	return time.Date(base.Year(), base.Month(), base.Day(), hours, mins, 0, 0, base.Location())
 }
