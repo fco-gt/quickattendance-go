@@ -4,6 +4,7 @@ import (
 	"context"
 	"quickattendance-go/internal/domain"
 	"quickattendance-go/internal/dto"
+	"quickattendance-go/pkg/utils"
 	"time"
 
 	"github.com/google/uuid"
@@ -33,7 +34,6 @@ func NewAttendanceService(
 func (s *AttendanceService) MarkAttendance(ctx context.Context, req *dto.MarkAttendanceRequest) (*dto.AttendanceResponse, error) {
 	now := time.Now()
 
-	// 1. Get schedule for the user and today
 	sched, err := s.scheduleSvc.GetApplicableSchedule(ctx, req.AgencyID, req.UserID, now)
 	if err != nil {
 		return nil, err
@@ -41,11 +41,35 @@ func (s *AttendanceService) MarkAttendance(ctx context.Context, req *dto.MarkAtt
 
 	var response *dto.AttendanceResponse
 
+	user, err := s.userRepo.GetByID(ctx, req.UserID)
+	if err != nil {
+		return nil, err
+	}
+
 	err = s.transactor.WithinTransaction(ctx, func(txCtx context.Context) error {
-		// 2. Check for existing attendance today
 		existing, err := s.attendanceRepo.GetTodayByUserID(txCtx, req.AgencyID, req.UserID)
 		if err != nil {
 			return err
+		}
+
+		if req.Method == domain.MethodManual {
+			if user.Role != domain.RoleAdmin && req.Method == domain.MethodManual {
+				return domain.ErrManualNotAllowed
+			}
+		}
+
+		if req.IsRemote != nil && *req.IsRemote {
+			if user.HomeLatitude == nil || user.HomeLongitude == nil || user.HomeRadiusMeters == nil {
+				return domain.ErrInvalidAttendance
+			}
+			if req.Latitude == nil || req.Longitude == nil {
+				return domain.ErrInvalidAttendance
+			}
+
+			dist := utils.Haversine(*user.HomeLatitude, *user.HomeLongitude, *req.Latitude, *req.Longitude)
+			if dist > float64(*user.HomeRadiusMeters) {
+				return domain.ErrGeofenceViolation
+			}
 		}
 
 		if req.Type == domain.TypeIn {
@@ -53,11 +77,9 @@ func (s *AttendanceService) MarkAttendance(ctx context.Context, req *dto.MarkAtt
 				return domain.ErrAttendanceExists
 			}
 
-			// Parse schedule times for the current date
 			entryTime := parseTimeMinutes(now, sched.EntryTimeMinutes)
 			exitTime := parseTimeMinutes(now, sched.ExitTimeMinutes)
 
-			// Calculate Status
 			status := domain.StatusPresent
 			lateLimit := entryTime.Add(time.Duration(sched.GracePeriodMinutes) * time.Minute)
 			if now.After(lateLimit) {
@@ -85,20 +107,16 @@ func (s *AttendanceService) MarkAttendance(ctx context.Context, req *dto.MarkAtt
 			return nil
 		}
 
-		// Type OUT
 		if existing == nil {
 			return domain.ErrAttendanceNotFound
 		}
 
 		if existing.CheckOutTime != nil {
-			return domain.ErrAttendanceExists // Already checked out
+			return domain.ErrAttendanceExists
 		}
 
 		existing.CheckOutTime = &now
 		existing.MethodOut = &req.Method
-
-		// If he leaves early? Optional logic
-		// if now.Before(existing.ScheduleExitTime) { ... }
 
 		if err := s.attendanceRepo.Update(txCtx, existing); err != nil {
 			return err

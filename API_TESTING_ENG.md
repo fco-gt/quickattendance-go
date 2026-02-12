@@ -117,6 +117,11 @@ This guide details the steps to comprehensively test the QuickAttendance API, fr
     }
     ```
 
+#### Attendance Business Rules:
+*   **Automatic (QR/NFC)**: Employees can mark their own attendance.
+*   **Remote (is_remote)**: If `is_remote` is true, the API validates that the coordinates are within the radius configured in the user's profile (`HomeLatitude`, `HomeLongitude`).
+*   **Manual**: Only administrators can mark attendance manually for other users. If an employee attempts to use this method, an error will be returned.
+
 ### 8. Dynamic Queries (Search and Pagination)
 #### List Users with Filters
 *   **URL**: `/users/list?search=John&status=active&page=1&limit=10`

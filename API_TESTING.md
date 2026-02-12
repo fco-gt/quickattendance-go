@@ -117,6 +117,11 @@ Esta guía detalla los pasos para probar de manera integral la API de QuickAtten
     }
     ```
 
+#### Reglas de Negocio para Asistencia:
+*   **Automático (QR/NFC)**: El empleado puede marcar su propia asistencia.
+*   **Teletrabajo (is_remote)**: Si `is_remote` es true, la API valida que las coordenadas estén dentro del radio configurado en el perfil del usuario (`HomeLatitude`, `HomeLongitude`).
+*   **Manual**: Solo los administradores pueden marcar asistencia manualmente para otros usuarios. Si un empleado intenta usar este método, recibirá un error.
+
 ### 8. Consultas Dinámicas (Búsqueda y Paginación)
 #### Listar Usuarios con Filtros
 *   **URL**: `/users/list?search=Juan&status=active&page=1&limit=10`

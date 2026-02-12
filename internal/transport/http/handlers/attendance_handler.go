@@ -29,7 +29,7 @@ func (h *AttendanceHandler) Mark(c *gin.Context) {
 	}
 
 	// Security: Employees can only mark their own attendance
-	role := c.MustGet("user_role").(domain.Role)
+	role := c.MustGet("role").(domain.Role)
 	if role == domain.RoleEmployee {
 		req.UserID = userID
 	} else if req.UserID == uuid.Nil {
@@ -46,6 +46,14 @@ func (h *AttendanceHandler) Mark(c *gin.Context) {
 		}
 		if err == domain.ErrNoScheduleFound {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "no tienes un horario asignado para hoy"})
+			return
+		}
+		if err == domain.ErrManualNotAllowed {
+			c.JSON(http.StatusForbidden, gin.H{"error": "solo administradores pueden marcar asistencia manualmente"})
+			return
+		}
+		if err == domain.ErrGeofenceViolation {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "estás fuera del rango permitido de tu domicilio"})
 			return
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error interno del servidor"})
@@ -65,7 +73,7 @@ func (h *AttendanceHandler) List(c *gin.Context) {
 	}
 
 	// Security: Employees can only see their own attendance
-	role := c.MustGet("user_role").(domain.Role)
+	role := c.MustGet("role").(domain.Role)
 	if role == domain.RoleEmployee {
 		params.UserID = c.MustGet("user_id").(uuid.UUID).String()
 	} else if params.UserID != "" {

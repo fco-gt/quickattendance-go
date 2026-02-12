@@ -15,6 +15,9 @@ var (
 	ErrAttendanceExists    = errors.New("attendance already exists")
 	ErrAttendanceInvalid   = errors.New("invalid attendance")
 	ErrInvalidUserOrAgency = errors.New("invalid user or agency")
+	ErrGeofenceViolation   = errors.New("location out of range")
+	ErrManualNotAllowed    = errors.New("only admins can mark attendance manually")
+	ErrInvalidAttendance   = errors.New("invalid attendance data")
 )
 
 type Attendance struct {

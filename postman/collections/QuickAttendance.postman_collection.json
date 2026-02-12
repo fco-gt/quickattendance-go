@@ -201,6 +201,7 @@
             {
               "listen": "test",
               "script": {
+                "id": "ee65579e-0cfd-4f12-acb9-ed0e6e659534",
                 "exec": [
                   "var jsonData = pm.response.json();",
                   "if (jsonData.token) {",
@@ -208,7 +209,21 @@
                   "    console.log(\"Token guardado en variable de colección\");",
                   "}"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "23766828-88da-42b5-89da-0685f99d7ec0",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -221,7 +236,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@empresa.com\",\n  \"password\": \"password123\"\n}",
+              "raw": "{\n  \"email\": \"empleado@empresa.com\",\n  \"password\": \"password123\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -337,7 +352,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "32240035-23df-4f2a-a5b9-f93998507b8c"
+                  "value": "6404e6fe-2a2f-4915-8a80-703af09e1ea2"
                 }
               ]
             }
@@ -371,32 +386,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "32240035-23df-4f2a-a5b9-f93998507b8c"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Delete User",
-          "id": "85ea6b10-88d7-47f2-b932-e496e3b2558f",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/users/:id",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "users",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "32240035-23df-4f2a-a5b9-f93998507b8c"
+                  "value": "6404e6fe-2a2f-4915-8a80-703af09e1ea2"
                 }
               ]
             }
@@ -434,6 +424,31 @@
                 {
                   "key": "limit",
                   "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User by ID Copy",
+          "id": "f5ff363f-7e8c-40e6-9683-723a98abdfba",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "6404e6fe-2a2f-4915-8a80-703af09e1ea2"
                 }
               ]
             }
@@ -482,7 +497,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/schedules/applicable?date=2024-05-20&user_id=32240035-23df-4f2a-a5b9-f93998507b8c",
+              "raw": "{{base_url}}/schedules/applicable?date=2024-05-20&user_id=27efc044-ad0b-4df4-a11d-b336784115d8",
               "host": [
                 "{{base_url}}"
               ],
@@ -498,7 +513,7 @@
                 },
                 {
                   "key": "user_id",
-                  "value": "32240035-23df-4f2a-a5b9-f93998507b8c",
+                  "value": "27efc044-ad0b-4df4-a11d-b336784115d8",
                   "uuid": "e895db55-2ce4-40e4-9839-57bac94a5387"
                 }
               ]
@@ -524,7 +539,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "7eb05d1e-c6a5-475f-8901-836f362f2242"
+                  "value": "04cdcb05-cace-4d73-b0d3-8e725fcc032c"
                 }
               ]
             }
@@ -585,7 +600,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "7eb05d1e-c6a5-475f-8901-836f362f2242"
+                  "value": "04cdcb05-cace-4d73-b0d3-8e725fcc032c"
                 }
               ]
             }
@@ -610,7 +625,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "17745df8-4a76-4b7d-987d-3da7a9b9b59c"
+                  "value": "04cdcb05-cace-4d73-b0d3-8e725fcc032c"
                 }
               ]
             }
@@ -624,14 +639,98 @@
       "name": "Attendance",
       "item": [
         {
-          "name": "Mark Attendance",
+          "name": "Mark Attendance (QR)",
           "id": "d68da660-0e84-4d62-ac05-a08a2b85dc98",
           "request": {
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"type\": \"in\",\n  \"method\": \"qr\",\n  \"latitude\": -34.6037,\n  \"longitude\": -58.3816,\n  \"notes\": \"Llegando a la oficina\",\n  \"is_remote\": false\n}",
+              "raw": "{\n  \"type\": \"in\",\n  \"method\": \"qr\",\n  \"latitude\": -34.6037,\n  \"longitude\": -58.3816,\n  \"notes\": \"Entrada vía QR\",\n  \"is_remote\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/attendance/mark",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "attendance",
+                "mark"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Attendance (NFC)",
+          "id": "b3f07a12-8d9e-4c54-b40d-1e4b9bd2a47c",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"in\",\n  \"method\": \"nfc\",\n  \"notes\": \"Entrada vía NFC\",\n  \"is_remote\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/attendance/mark",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "attendance",
+                "mark"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Attendance (Remote - IN)",
+          "id": "76e3d541-2ce4-40e4-9839-57bac94a5387",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"in\",\n  \"method\": \"telework\",\n  \"latitude\": -34.6037,\n  \"longitude\": -58.3816,\n  \"is_remote\": true,\n  \"notes\": \"Marcando desde casa (Teletrabajo)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/attendance/mark",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "attendance",
+                "mark"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Attendance (Manual - Admin)",
+          "id": "e895db55-2ce4-40e4-9839-57bac94a5387",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"PASTE_USER_ID_HERE\",\n  \"type\": \"in\",\n  \"method\": \"manual\",\n  \"notes\": \"Marcación manual por el Admin\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -708,13 +807,13 @@
   },
   "variable": [
     {
-      "id": "5bc67b20-b17c-4268-b2f6-ca448ff53d48",
+      "id": "3da952e4-a4c1-42bc-b53c-7c80304b772b",
       "key": "base_url",
       "value": "http://localhost:8080/api/v1",
       "type": "string"
     },
     {
-      "id": "dc810440-4419-479d-ac40-dd6d3dd3cd03",
+      "id": "9a829ce2-0623-44b0-92c8-8234b02b5328",
       "key": "token",
       "value": "",
       "type": "string"
