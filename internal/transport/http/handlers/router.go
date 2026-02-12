@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"autoattendance-go/internal/domain"
-	"autoattendance-go/internal/service"
-	"autoattendance-go/internal/transport/http/middleware"
-	"autoattendance-go/pkg/security"
+	"quickattendance-go/internal/domain"
+	"quickattendance-go/internal/service"
+	"quickattendance-go/internal/transport/http/middleware"
+	"quickattendance-go/pkg/security"
 
 	"github.com/gin-gonic/gin"
 )
@@ -47,7 +47,7 @@ func NewRouter(
 		v1.GET("/health", func(c *gin.Context) {
 			c.JSON(200, gin.H{
 				"status":  "ok",
-				"service": "autoattendance-api",
+				"service": "quickattendance-api",
 			})
 		})
 

@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"autoattendance-go/internal/domain"
-	"autoattendance-go/internal/dto"
-	"autoattendance-go/internal/service"
 	"net/http"
+	"quickattendance-go/internal/domain"
+	"quickattendance-go/internal/dto"
+	"quickattendance-go/internal/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

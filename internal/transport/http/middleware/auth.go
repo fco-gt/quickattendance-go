@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"autoattendance-go/pkg/security"
 	"log/slog"
 	"net/http"
+	"quickattendance-go/pkg/security"
 	"strings"
 
 	"github.com/gin-gonic/gin"

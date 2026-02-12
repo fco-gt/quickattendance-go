@@ -1,9 +1,9 @@
 package service
 
 import (
-	"autoattendance-go/internal/domain"
-	"autoattendance-go/internal/dto"
 	"context"
+	"quickattendance-go/internal/domain"
+	"quickattendance-go/internal/dto"
 	"strconv"
 	"strings"
 	"time"

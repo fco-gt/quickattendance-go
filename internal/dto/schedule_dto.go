@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"autoattendance-go/internal/domain"
+	"quickattendance-go/internal/domain"
 	"strconv"
 	"strings"
 	"time"

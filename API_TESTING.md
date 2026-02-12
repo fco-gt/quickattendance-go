@@ -1,0 +1,139 @@
+# Guía de Pruebas de API - QuickAttendance
+
+Esta guía detalla los pasos para probar de manera integral la API de QuickAttendance, desde la creación de una agencia hasta la gestión de asistencias.
+
+## Configuración Inicial en Postman
+* **Base URL**: `http://localhost:8080/api/v1`
+* **Env**: Crea una variable `token` para almacenar el JWT recibido en el login.
+
+---
+
+## Flujo de Pruebas Paso a Paso
+
+### 1. Salud del Sistema
+*   **Método**: `GET`
+*   **URL**: `/health`
+*   **Propósito**: Verificar que la API esté corriendo.
+
+### 2. Registro de Agencia (Admin Inicial)
+*   **Método**: `POST`
+*   **URL**: `/agencies`
+*   **Payload**:
+    ```json
+    {
+      "name": "Mi Gran Empresa",
+      "domain": "empresa.com",
+      "address": "Calle Falsa 123",
+      "phone": "+123456789",
+      "admin_email": "admin@empresa.com",
+      "password": "password123"
+    }
+    ```
+*   **Nota**: Este endpoint crea la agencia y al primer usuario con rol `admin`.
+
+### 3. Login
+*   **Método**: `POST`
+*   **URL**: `/users/login`
+*   **Payload**:
+    ```json
+    {
+      "email": "admin@empresa.com",
+      "password": "password123"
+    }
+    ```
+*   **Acción**: Copia el `token` de la respuesta y úsalo para las siguientes peticiones en el header `Authorization: Bearer <TOKEN>`.
+
+### 4. Invitación de Empleado (Admin Only)
+*   **Método**: `POST`
+*   **URL**: `/users/invite`
+*   **Header**: `Authorization: Bearer <ADMIN_TOKEN>`
+*   **Payload**:
+    ```json
+    {
+      "email": "empleado@empresa.com",
+      "first_name": "Juan",
+      "last_name": "Pérez"
+    }
+    ```
+*   **Resultado**: En un entorno real llegaría un correo. En desarrollo, puedes buscar el `activation_code` en la base de datos de la tabla `users`.
+
+### 5. Activación de Cuenta (Empleado)
+*   **Método**: `POST`
+*   **URL**: `/users/activate`
+*   **Payload**:
+    ```json
+    {
+      "activation_token": "EL_CODIGO_DE_LA_DB",
+      "password": "newpassword123",
+      "profile": {
+        "first_name": "Juan",
+        "last_name": "Pérez Updated"
+      }
+    }
+    ```
+
+### 6. Gestión de Horarios (Admin Only)
+#### Crear Horario
+*   **Método**: `POST`
+*   **URL**: `/schedules`
+*   **Payload**:
+    ```json
+    {
+      "name": "Turno Mañana",
+      "days_of_week": [1, 2, 3, 4, 5],
+      "entry_time_minutes": 540, 
+      "exit_time_minutes": 1080,
+      "grace_period_minutes": 15,
+      "is_default": true
+    }
+    ```
+    *(540 min = 09:00 AM, 1080 min = 18:00 PM)*
+
+### 7. Registrar Asistencia (Empleado)
+#### Marcar Entrada
+*   **Método**: `POST`
+*   **URL**: `/attendance/mark`
+*   **Payload**:
+    ```json
+    {
+      "type": "in",
+      "method": "qr",
+      "latitude": -34.6037,
+      "longitude": -58.3816,
+      "notes": "Llegando a la oficina"
+    }
+    ```
+
+#### Marcar Salida
+*   **Método**: `POST`
+*   **URL**: `/attendance/mark`
+*   **Payload**:
+    ```json
+    {
+      "type": "out",
+      "method": "manual",
+      "notes": "Fin de jornada"
+    }
+    ```
+
+### 8. Consultas Dinámicas (Búsqueda y Paginación)
+#### Listar Usuarios con Filtros
+*   **URL**: `/users/list?search=Juan&status=active&page=1&limit=10`
+#### Listar Asistencias por Fecha
+*   **URL**: `/attendance/list?start_date=2024-01-01&end_date=2024-12-31&status=late`
+
+---
+
+## Resumen de Roles y Permisos
+
+| Endpoint | Método | Usuario | Admin |
+| :--- | :--- | :---: | :---: |
+| `/agencies` | POST | 🔓 Público | 🔓 |
+| `/users/login` | POST | 🔓 Público | 🔓 |
+| `/users/me` | GET | ✅ | ✅ |
+| `/users/invite` | POST | ❌ | ✅ |
+| `/schedules` | POST/PUT | ❌ | ✅ |
+| `/attendance/mark`| POST | ✅ | ✅ |
+| `/attendance/list`| GET | ✅ (Solo propia) | ✅ (Toda la agencia) |
+
+---

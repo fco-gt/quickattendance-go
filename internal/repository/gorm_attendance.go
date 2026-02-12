@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"autoattendance-go/internal/domain"
 	"context"
+	"quickattendance-go/internal/domain"
 	"time"
 
 	"github.com/google/uuid"

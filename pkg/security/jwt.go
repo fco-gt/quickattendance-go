@@ -1,8 +1,8 @@
 package security
 
 import (
-	"autoattendance-go/internal/domain"
 	"errors"
+	"quickattendance-go/internal/domain"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"

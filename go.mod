@@ -1,4 +1,4 @@
-module autoattendance-go
+module quickattendance-go
 
 go 1.25.6
 

@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"autoattendance-go/internal/domain"
 	"context"
 	"errors"
+	"quickattendance-go/internal/domain"
 	"strconv"
 	"time"
 

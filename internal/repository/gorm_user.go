@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"autoattendance-go/internal/domain"
 	"context"
+	"quickattendance-go/internal/domain"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"

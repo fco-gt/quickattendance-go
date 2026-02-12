@@ -1,10 +1,10 @@
 package service
 
 import (
-	"autoattendance-go/internal/domain"
-	"autoattendance-go/internal/dto"
-	"autoattendance-go/pkg/security"
 	"context"
+	"quickattendance-go/internal/domain"
+	"quickattendance-go/internal/dto"
+	"quickattendance-go/pkg/security"
 
 	"github.com/google/uuid"
 )

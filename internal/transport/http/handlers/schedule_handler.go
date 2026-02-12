@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"autoattendance-go/internal/dto"
-	"autoattendance-go/internal/service"
 	"net/http"
+	"quickattendance-go/internal/dto"
+	"quickattendance-go/internal/service"
 	"time"
 
 	"github.com/gin-gonic/gin"

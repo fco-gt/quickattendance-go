@@ -1,10 +1,10 @@
 package middleware
 
 import (
-	"autoattendance-go/internal/domain"
 	"fmt"
 	"log/slog"
 	"net/http"
+	"quickattendance-go/internal/domain"
 	"slices"
 
 	"github.com/gin-gonic/gin"

@@ -1,17 +1,17 @@
 package main
 
 import (
-	"autoattendance-go/internal/config"
-	"autoattendance-go/internal/domain"
-	"autoattendance-go/internal/repository"
-	"autoattendance-go/internal/service"
-	"autoattendance-go/internal/transport/http/handlers"
-	"autoattendance-go/pkg/logger"
-	"autoattendance-go/pkg/security"
 	"fmt"
 	"log"
 	"log/slog"
 	"os"
+	"quickattendance-go/internal/config"
+	"quickattendance-go/internal/domain"
+	"quickattendance-go/internal/repository"
+	"quickattendance-go/internal/service"
+	"quickattendance-go/internal/transport/http/handlers"
+	"quickattendance-go/pkg/logger"
+	"quickattendance-go/pkg/security"
 	"time"
 
 	"github.com/joho/godotenv"
