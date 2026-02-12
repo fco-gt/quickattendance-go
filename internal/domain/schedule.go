@@ -52,7 +52,7 @@ type ScheduleRepo interface {
 	Create(ctx context.Context, schedule *Schedule) error
 	GetByID(ctx context.Context, id uuid.UUID) (*Schedule, error)
 	GetByAgencyID(ctx context.Context, agencyID uuid.UUID, filter ScheduleFilter) ([]*Schedule, error)
-	GetByDate(ctx context.Context, date time.Time) ([]*Schedule, error)
+	GetByDate(ctx context.Context, agencyID uuid.UUID, date time.Time) ([]*Schedule, error)
 	GetDefault(ctx context.Context, agencyID uuid.UUID) (*Schedule, error)
 	GetByName(ctx context.Context, agencyID uuid.UUID, name string) ([]*Schedule, error)
 	GetUserScheduleByDay(ctx context.Context, agencyID uuid.UUID, userID uuid.UUID, weekday string) (*Schedule, error)

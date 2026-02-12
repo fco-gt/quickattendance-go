@@ -87,8 +87,8 @@ func (r *ScheduleRepo) GetByName(ctx context.Context, agencyID uuid.UUID, name s
 	return schedules, nil
 }
 
-// GetByWeekday busca horarios que apliquen a un día específico (0=Dom, 1=Lun...)
-func (r *ScheduleRepo) GetByWeekday(ctx context.Context, agencyID uuid.UUID, date time.Time) ([]*domain.Schedule, error) {
+// GetByDate busca horarios que apliquen a un día específico (0=Dom, 1=Lun...)
+func (r *ScheduleRepo) GetByDate(ctx context.Context, agencyID uuid.UUID, date time.Time) ([]*domain.Schedule, error) {
 	db, ok := ctx.Value("tx").(*gorm.DB)
 	if !ok {
 		db = r.db

@@ -46,7 +46,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	db.AutoMigrate(&domain.Agency{}, &domain.User{})
+	db.AutoMigrate(&domain.Agency{}, &domain.User{}, &domain.Schedule{}, &domain.Attendance{})
 
 	// Utilities
 	jwtService := security.NewJWTService(cfg.JWTSecret)
@@ -56,14 +56,18 @@ func main() {
 	// Repositories
 	agencyRepo := repository.NewAgencyRepo(db)
 	userRepo := repository.NewUserRepo(db)
+	scheduleRepo := repository.NewScheduleRepo(db)
+	attendanceRepo := repository.NewAttendanceRepo(db)
 	txManager := repository.NewGormTransactor(db)
 
 	// Services
 	agencySvc := service.NewAgencyService(agencyRepo, userRepo, hasher, txManager)
 	userSvc := service.NewUserService(userRepo, agencyRepo, jwtService, hasher, tokenTTL)
+	scheduleSvc := service.NewScheduleService(scheduleRepo, userRepo, txManager)
+	attendanceSvc := service.NewAttendanceService(attendanceRepo, userRepo, scheduleSvc, txManager)
 
 	// Router
-	r := handlers.NewRouter(agencySvc, userSvc, jwtService)
+	r := handlers.NewRouter(agencySvc, userSvc, scheduleSvc, attendanceSvc, jwtService)
 
 	// Server
 	fmt.Printf("Server running on port %s\n", cfg.HTTPPort)
