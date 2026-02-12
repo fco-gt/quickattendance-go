@@ -79,7 +79,7 @@ func (s *ScheduleService) GetAgencySchedules(ctx context.Context, agencyID uuid.
 		return nil, err
 	}
 
-	var scheduleResponses []*dto.ScheduleResponse
+	scheduleResponses := []*dto.ScheduleResponse{}
 	for _, schedule := range schedules {
 		scheduleResponses = append(scheduleResponses, dto.ToScheduleResponse(schedule))
 	}

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"quickattendance-go/internal/domain"
 	"quickattendance-go/internal/dto"
 	"quickattendance-go/internal/service"
 	"time"
@@ -28,7 +29,12 @@ func (h *ScheduleHandler) Create(c *gin.Context) {
 
 	res, err := h.svc.CreateSchedule(c.Request.Context(), agencyID, &req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		switch err {
+		case domain.ErrDefaultScheduleAlreadyExists, domain.ErrScheduleNameAlreadyExists:
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		}
 		return
 	}
 
@@ -66,7 +72,7 @@ func (h *ScheduleHandler) List(c *gin.Context) {
 	// Now passing params for filtering and pagination
 	res, err := h.svc.GetAgencySchedules(c.Request.Context(), agencyID, &params)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to list schedules"})
 		return
 	}
 
@@ -83,10 +89,13 @@ func (h *ScheduleHandler) GetApplicable(c *gin.Context) {
 	}
 
 	userID := c.MustGet("user_id").(uuid.UUID)
-	// Simple role check for demo (could use middleware)
-	// role := c.MustGet("user_role").(string)
-	if params.UserID != uuid.Nil {
-		userID = params.UserID
+	if params.UserID != "" {
+		parsedID, err := uuid.Parse(params.UserID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user_id format"})
+			return
+		}
+		userID = parsedID
 	}
 
 	parsedDate, err := time.Parse("2006-01-02", params.Date)
@@ -122,7 +131,14 @@ func (h *ScheduleHandler) Update(c *gin.Context) {
 
 	res, err := h.svc.UpdateSchedule(c.Request.Context(), &req, scheduleID, agencyID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		switch err {
+		case domain.ErrScheduleNotFound:
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		case domain.ErrScheduleNameAlreadyExists:
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		}
 		return
 	}
 
@@ -141,7 +157,14 @@ func (h *ScheduleHandler) Delete(c *gin.Context) {
 
 	err = h.svc.DeleteSchedule(c.Request.Context(), scheduleID, agencyID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		switch err {
+		case domain.ErrScheduleNotFound:
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		case domain.ErrDeleteDefaultSchedule:
+			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		}
 		return
 	}
 

@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"quickattendance-go/internal/domain"
 	"strconv"
 	"time"
@@ -132,19 +131,21 @@ func (r *ScheduleRepo) GetDefault(ctx context.Context, agencyID uuid.UUID) (*dom
 		db = r.db
 	}
 
-	var schedule domain.Schedule
+	var schedules []domain.Schedule
 	err := db.WithContext(ctx).
 		Where("agency_id = ? AND is_default = ?", agencyID, true).
-		First(&schedule).Error
+		Limit(1).
+		Find(&schedules).Error
 
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
 		return nil, err
 	}
 
-	return &schedule, nil
+	if len(schedules) == 0 {
+		return nil, nil
+	}
+
+	return &schedules[0], nil
 }
 
 func (r *ScheduleRepo) GetUserScheduleByDay(ctx context.Context, agencyID uuid.UUID, userID uuid.UUID, weekday string) (*domain.Schedule, error) {

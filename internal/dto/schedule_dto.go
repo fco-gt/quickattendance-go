@@ -87,6 +87,6 @@ type ScheduleListParams struct {
 }
 
 type GetApplicableScheduleParams struct {
-	UserID uuid.UUID `form:"user_id" binding:"omitempty"`
-	Date   string    `form:"date" binding:"required"` // Format: YYYY-MM-DD
+	UserID string `form:"user_id" binding:"omitempty"`
+	Date   string `form:"date" binding:"required"` // Format: YYYY-MM-DD
 }
