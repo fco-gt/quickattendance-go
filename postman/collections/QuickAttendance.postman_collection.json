@@ -431,7 +431,7 @@
           "response": []
         },
         {
-          "name": "Get User by ID Copy",
+          "name": "Delete User",
           "id": "f5ff363f-7e8c-40e6-9683-723a98abdfba",
           "request": {
             "method": "GET",
@@ -695,7 +695,7 @@
           "response": []
         },
         {
-          "name": "Mark Attendance (Remote - IN)",
+          "name": "Mark Attendance (Remote)",
           "id": "76e3d541-2ce4-40e4-9839-57bac94a5387",
           "request": {
             "method": "POST",
@@ -807,13 +807,13 @@
   },
   "variable": [
     {
-      "id": "3da952e4-a4c1-42bc-b53c-7c80304b772b",
+      "id": "eff36169-db76-4488-a03b-d639f91420b1",
       "key": "base_url",
       "value": "http://localhost:8080/api/v1",
       "type": "string"
     },
     {
-      "id": "9a829ce2-0623-44b0-92c8-8234b02b5328",
+      "id": "1fc1ed62-b73f-4145-91c4-880e42c5ec62",
       "key": "token",
       "value": "",
       "type": "string"

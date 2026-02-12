@@ -43,6 +43,9 @@ func (s *AttendanceService) MarkAttendance(ctx context.Context, req *dto.MarkAtt
 
 	user, err := s.userRepo.GetByID(ctx, req.UserID)
 	if err != nil {
+		if err == domain.ErrUserNotFound {
+			return nil, domain.ErrUserNotFound
+		}
 		return nil, err
 	}
 

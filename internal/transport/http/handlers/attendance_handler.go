@@ -56,6 +56,18 @@ func (h *AttendanceHandler) Mark(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "estás fuera del rango permitido de tu domicilio"})
 			return
 		}
+		if err == domain.ErrHomeLocationNotSet {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "no tienes configurada tu ubicación de domicilio para teletrabajo"})
+			return
+		}
+		if err == domain.ErrUserNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"error": "usuario no encontrado"})
+			return
+		}
+		if err == domain.ErrInvalidAttendance {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "datos de asistencia inválidos"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error interno del servidor"})
 		return
 	}

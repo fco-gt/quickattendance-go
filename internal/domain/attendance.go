@@ -18,6 +18,7 @@ var (
 	ErrGeofenceViolation   = errors.New("location out of range")
 	ErrManualNotAllowed    = errors.New("only admins can mark attendance manually")
 	ErrInvalidAttendance   = errors.New("invalid attendance data")
+	ErrHomeLocationNotSet  = errors.New("user does not have home location configured")
 )
 
 type Attendance struct {
