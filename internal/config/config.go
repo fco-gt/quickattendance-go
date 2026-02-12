@@ -14,11 +14,13 @@ type Config struct {
 	JWTSecret      string
 	AccessTokenTTL time.Duration
 	BCryptCost     int
+	RabbitURL      string
 }
 
 func Load() *Config {
 	ttlStr := getEnv("ACCESS_TOKEN_TTL", "15m")
 	bcryptCostStr := getEnv("BCRYPT_COST", "12")
+	rabbitURL := getEnv("RABBIT_URL", "amqp://user:pass@localhost:5672/")
 
 	ttl, err := time.ParseDuration(ttlStr)
 	if err != nil {
@@ -37,6 +39,7 @@ func Load() *Config {
 		JWTSecret:      mustEnv("JWT_SECRET"),
 		AccessTokenTTL: ttl,
 		BCryptCost:     bcryptCost,
+		RabbitURL:      rabbitURL,
 	}
 
 	return cfg

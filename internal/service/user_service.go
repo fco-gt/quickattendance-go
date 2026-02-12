@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"quickattendance-go/internal/domain"
 	"quickattendance-go/internal/dto"
 	"quickattendance-go/pkg/security"
@@ -11,20 +13,22 @@ import (
 )
 
 type UserService struct {
-	userRepo   domain.UserRepo
-	agencyRepo domain.AgencyRepo
-	jwt        *security.JWTService
-	hasher     *security.PasswordHasher
-	tokenTTL   time.Duration
+	userRepo    domain.UserRepo
+	agencyRepo  domain.AgencyRepo
+	jwt         *security.JWTService
+	hasher      *security.PasswordHasher
+	notificator domain.NotificationProvider
+	tokenTTL    time.Duration
 }
 
-func NewUserService(userRepo domain.UserRepo, agencyRepo domain.AgencyRepo, jwt *security.JWTService, hasher *security.PasswordHasher, tokenTTL time.Duration) *UserService {
+func NewUserService(userRepo domain.UserRepo, agencyRepo domain.AgencyRepo, jwt *security.JWTService, hasher *security.PasswordHasher, notificator domain.NotificationProvider, tokenTTL time.Duration) *UserService {
 	return &UserService{
-		userRepo:   userRepo,
-		agencyRepo: agencyRepo,
-		jwt:        jwt,
-		hasher:     hasher,
-		tokenTTL:   tokenTTL,
+		userRepo:    userRepo,
+		agencyRepo:  agencyRepo,
+		jwt:         jwt,
+		hasher:      hasher,
+		notificator: notificator,
+		tokenTTL:    tokenTTL,
 	}
 }
 
@@ -55,6 +59,16 @@ func (s *UserService) Invite(ctx context.Context, agencyID uuid.UUID, req *dto.I
 	if err := s.userRepo.Create(ctx, user); err != nil {
 		return err
 	}
+
+	subject := "¡Bienvenido a QuickAttendance!"
+	body := fmt.Sprintf("Hola %s, activa tu cuenta haciendo click en el siguiente enlace: %s", user.FirstName, *user.ActivationCode)
+
+	go func() {
+		err := s.notificator.PublishEmail(context.Background(), user.Email, subject, body)
+		if err != nil {
+			log.Printf("Error sending email: %v", err)
+		}
+	}()
 
 	return nil
 }

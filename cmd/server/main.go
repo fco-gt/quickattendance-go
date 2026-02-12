@@ -11,6 +11,7 @@ import (
 	"quickattendance-go/internal/service"
 	"quickattendance-go/internal/transport/http/handlers"
 	"quickattendance-go/pkg/logger"
+	"quickattendance-go/pkg/messaging"
 	"quickattendance-go/pkg/security"
 	"time"
 
@@ -53,6 +54,14 @@ func main() {
 	hasher := security.NewPasswordHasher(cfg.BCryptCost)
 	tokenTTL := cfg.AccessTokenTTL
 
+	// RabbitMQ
+	emailProducer, err := messaging.NewRabbitMQProducer(cfg.RabbitURL, "email_queue")
+	if err != nil {
+		slog.Error("failed to connect to RabbitMQ", "error", err)
+		os.Exit(1)
+	}
+	defer emailProducer.Close()
+
 	// Repositories
 	agencyRepo := repository.NewAgencyRepo(db)
 	userRepo := repository.NewUserRepo(db)
@@ -62,7 +71,7 @@ func main() {
 
 	// Services
 	agencySvc := service.NewAgencyService(agencyRepo, userRepo, hasher, txManager)
-	userSvc := service.NewUserService(userRepo, agencyRepo, jwtService, hasher, tokenTTL)
+	userSvc := service.NewUserService(userRepo, agencyRepo, jwtService, hasher, emailProducer, tokenTTL)
 	scheduleSvc := service.NewScheduleService(scheduleRepo, userRepo, txManager)
 	attendanceSvc := service.NewAttendanceService(attendanceRepo, userRepo, scheduleSvc, txManager)
 
