@@ -51,12 +51,10 @@ The system follows a modular monolith approach with a clear separation of concer
     ```bash
     docker-compose up --build
     ```
-    This will start the API, the PostgreSQL database, and the RabbitMQ broker.
-4.  **Run the Worker**:
-    If you are running outside of Docker Compose or need to scale consumers:
-    ```bash
-    go run cmd/worker/main.go
-    ```
+    This will start the **API**, the **Worker**, the PostgreSQL database, and the RabbitMQ broker automatically.
+4.  **API Testing**:
+    You can view and use the API testing environment from this public Postman collection:
+    [QuickAttendance Public Collection](https://www.postman.com/fco-gt/quickattendance/collection/32287192-4c116f57-2c57-4903-b835-34a4e7911073/?action=share&creator=32287192&active-environment=32287192-04a5f77e-97db-4782-996e-24692f0b3443)
 
 The API will be reachable at `http://localhost:8080`.
 

@@ -42,12 +42,10 @@ QuickAttendance es una plataforma profesional de gestión de asistencia de emple
     ```bash
     docker-compose up --build
     ```
-    Esto levantará la API, la base de datos PostgreSQL y el broker de RabbitMQ.
-4.  **Ejecutar el Worker**:
-    Para procesar las colas de mensajes (como el envío de emails de invitación):
-    ```bash
-    go run cmd/worker/main.go
-    ```
+    Esto levantará la **API**, el **Worker**, la base de datos PostgreSQL y el broker de RabbitMQ de forma automática.
+4.  **Pruebas de API**:
+    Puedes ver y utilizar el entorno de pruebas de la API desde esta colección pública de Postman:
+    [QuickAttendance Public Collection](https://www.postman.com/fco-gt/quickattendance/collection/32287192-4c116f57-2c57-4903-b835-34a4e7911073/?action=share&creator=32287192&active-environment=32287192-04a5f77e-97db-4782-996e-24692f0b3443)
 
 El servidor principal estará disponible en `http://localhost:8080`.
 
