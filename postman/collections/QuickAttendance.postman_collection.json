@@ -1,0 +1,622 @@
+{
+  "info": {
+    "_postman_id": "a98d3c12-7e4e-4b9d-9c3a-8f4b1e9c2d3e",
+    "name": "QuickAttendance API",
+    "description": "Colección completa para la API de QuickAttendance, con scripts para gestión de tokens.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "General",
+      "item": [
+        {
+          "name": "Health Check",
+          "id": "380f8f34-8de6-4c54-a40d-1e4b9bd2a47c",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "f076ca79-ee27-4626-9113-74331a1ebbee"
+    },
+    {
+      "name": "Agencies",
+      "item": [
+        {
+          "name": "Register Agency",
+          "id": "acb88ff4-694d-4608-a1f9-0cfc9caee0b0",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mi Gran Empresa\",\n  \"domain\": \"empresa.com\",\n  \"address\": \"Calle Falsa 123\",\n  \"phone\": \"+123456789\",\n  \"admin_email\": \"admin@empresa.com\",\n  \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/agencies",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "agencies"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Agency",
+          "id": "882e4ab5-0c68-4999-a4b5-a4c15d834738",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nombre Actualizado\",\n  \"address\": \"Nueva Dirección\",\n  \"phone\": \"+987654321\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/agencies",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "agencies"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "3fa91f2d-c9e9-44c2-b487-3e00c7f634af"
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set(\"token\", jsonData.token);",
+                  "    console.log(\"Token guardado en variable de colección\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "id": "c6a7b950-6589-4088-8ec9-29c728957ee8",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@empresa.com\",\n  \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Invite User",
+          "id": "84c2bd0d-d8bf-43c4-aec3-4f2503a3fae3",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"empleado@empresa.com\",\n  \"first_name\": \"Juan\",\n  \"last_name\": \"Pérez\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users/invite",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "invite"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Activate User",
+          "id": "1b69c66a-5f76-4afe-aec4-bb37b9bdead7",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activation_token\": \"EL_CODIGO_DE_LA_DB\",\n  \"password\": \"newpassword123\",\n  \"profile\": {\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Pérez\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users/activate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "activate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Me",
+          "id": "b4d8008c-47e7-4103-b5fa-03006a6db8f0",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User by ID",
+          "id": "0fef22c1-d5e2-4f88-9330-cc3b103771bf",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "18edacd1-0ba3-4aba-92a9-7b62cf8b7b59"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "id": "d255b71c-417d-4bd4-b653-db640cf385ef",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Juan Actualizado\",\n  \"last_name\": \"Pérez\",\n  \"email\": \"juan.new@empresa.com\",\n  \"home_latitude\": -34.6037,\n  \"home_longitude\": -58.3816,\n  \"home_radius_meters\": 50\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "18edacd1-0ba3-4aba-92a9-7b62cf8b7b59"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "id": "85ea6b10-88d7-47f2-b932-e496e3b2558f",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Users",
+          "id": "4d489342-ca27-49ea-9b38-bbca3c1197bf",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/list?search=Juan&status=active&page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Juan"
+                },
+                {
+                  "key": "status",
+                  "value": "active"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "c27cf5a1-2053-4e78-b847-bf8f1d75cb14"
+    },
+    {
+      "name": "Schedules",
+      "item": [
+        {
+          "name": "List Schedules",
+          "id": "f93a1d9b-e714-4b51-bcbc-e93032778c14",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/schedules/list?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "schedules",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Applicable Schedule",
+          "id": "df877b67-d08c-48d8-826b-ee8a322b587f",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/schedules/applicable?date=2024-05-20&user_id=",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "schedules",
+                "applicable"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2024-05-20"
+                },
+                {
+                  "key": "user_id",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Schedule by ID",
+          "id": "a077c54f-f1c7-40e1-9abb-59bc02aadd79",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/schedules/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "schedules",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Schedule",
+          "id": "dfe5fa1a-c04c-4778-acbf-e39d1d7a66b7",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Turno Mañana\",\n  \"days_of_week\": [1, 2, 3, 4, 5],\n  \"entry_time_minutes\": 540,\n  \"exit_time_minutes\": 1080,\n  \"grace_period_minutes\": 15,\n  \"is_default\": true,\n  \"assigned_users_ids\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/schedules",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "schedules"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Schedule",
+          "id": "c685118a-68f7-4198-9ca8-113afbf08eca",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Turno Tarde\",\n  \"entry_time_minutes\": 780,\n  \"exit_time_minutes\": 1320\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/schedules/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "schedules",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "17745df8-4a76-4b7d-987d-3da7a9b9b59c"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Schedule",
+          "id": "b588d402-7adb-4a2b-aef5-1a2ad09cfe5b",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/schedules/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "schedules",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "17745df8-4a76-4b7d-987d-3da7a9b9b59c"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "53f014b5-bf25-4937-9556-d8a854f169d4"
+    },
+    {
+      "name": "Attendance",
+      "item": [
+        {
+          "name": "Mark Attendance",
+          "id": "d68da660-0e84-4d62-ac05-a08a2b85dc98",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"in\",\n  \"method\": \"qr\",\n  \"latitude\": -34.6037,\n  \"longitude\": -58.3816,\n  \"notes\": \"Llegando a la oficina\",\n  \"is_remote\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/attendance/mark",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "attendance",
+                "mark"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Attendance",
+          "id": "60d2fd89-f157-44da-9604-11d48ba66031",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/attendance/list?start_date=2024-01-01&end_date=2024-12-31&status=late&page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "attendance",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2024-12-31"
+                },
+                {
+                  "key": "status",
+                  "value": "late"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "4b06c1d6-e9ba-4c79-9b5f-9b3212dd3bc2"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "id": "03ef1741-0943-4cff-b607-436c3d2083ce",
+      "key": "base_url",
+      "value": "http://localhost:8080/api/v1",
+      "type": "string"
+    },
+    {
+      "id": "627c2577-0061-4bf3-bb37-0bf16f90a33a",
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
