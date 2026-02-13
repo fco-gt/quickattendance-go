@@ -16,25 +16,23 @@ RUN go build -ldflags="-w -s" -o server ./cmd/server
 RUN go build -ldflags="-w -s" -o worker ./cmd/worker
 
 
-# ---------- Runtime base ----------
-FROM alpine:3.20 AS runner-base
+# ---------- Runtime Final ----------
+FROM alpine:3.20
 
 RUN apk --no-cache add ca-certificates && \
     addgroup -S appgroup && \
     adduser -S appuser -G appgroup
 
 WORKDIR /app
+
+COPY --from=builder /app/server .
+COPY --from=builder /app/worker .
+
+RUN chown appuser:appgroup /app/server /app/worker
+
 USER appuser
 
-
-# ---------- Server ----------
-FROM runner-base AS server
-COPY --from=builder /app/server .
 EXPOSE 8080
+
+# Por defecto arranca el server, Railway sobrescribirá esto para el Worker
 ENTRYPOINT ["./server"]
-
-
-# ---------- Worker ----------
-FROM runner-base AS worker
-COPY --from=builder /app/worker .
-ENTRYPOINT ["./worker"]
