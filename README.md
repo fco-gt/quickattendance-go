@@ -1,6 +1,6 @@
 # QuickAttendance - Enterprise Attendance Engine
 
-[![Go Version](https://img.shields.io/github/go-mod/go-version/tu-usuario/quickattendance-go)](https://golang.org/)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/fco-gt/quickattendance-go)](https://golang.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Swagger Docs](https://img.shields.io/badge/API_Docs-Swagger-blue.svg)](https://quickattendance-go-production.up.railway.app/swagger/index.html)
 
