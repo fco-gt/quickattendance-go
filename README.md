@@ -60,7 +60,7 @@ graph TD
 
 2.  **Explorar la API**:
     - **Swagger UI (Live)**: [https://quickattendance-go-production.up.railway.app/swagger/index.html](https://quickattendance-go-production.up.railway.app/swagger/index.html)
-    - **Postman**: [Public Collection Link](https://www.postman.com/fco-gt/quickattendance/collection/32287192-4c116f57-2c57-4903-b835-34a4e7911073/)
+    - **Postman**: [Public Collection Link](https://www.postman.com/fco-gt/quickattendance/collection/32287192-871aaa97-840d-47f8-8d36-bf7e6f281611)
 
 ## Documentación de Ingeniería
 

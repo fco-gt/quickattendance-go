@@ -4,7 +4,7 @@ This guide details the steps to comprehensively test the QuickAttendance API, fr
 
 ## Initial Postman Setup
 * **Base URL**: `http://localhost:8080/api/v1`
-* **Public Postman Collection**: [View collection on Postman](https://www.postman.com/fco-gt/quickattendance/collection/32287192-4c116f57-2c57-4903-b835-34a4e7911073/?action=share&creator=32287192&active-environment=32287192-04a5f77e-97db-4782-996e-24692f0b3443)
+* **Public Postman Collection**: [View collection on Postman](https://www.postman.com/fco-gt/quickattendance/collection/32287192-871aaa97-840d-47f8-8d36-bf7e6f281611)
 * **Env**: Create a `token` variable to store the JWT received upon login.
 
 ---

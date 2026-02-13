@@ -4,7 +4,7 @@ Esta guía detalla los pasos para probar de manera integral la API de QuickAtten
 
 ## Configuración Inicial en Postman
 * **Base URL**: `http://localhost:8080/api/v1`
-* **Colección Pública de Postman**: [Ver colección en Postman](https://www.postman.com/fco-gt/quickattendance/collection/32287192-4c116f57-2c57-4903-b835-34a4e7911073/?action=share&creator=32287192&active-environment=32287192-04a5f77e-97db-4782-996e-24692f0b3443)
+* **Colección Pública de Postman**: [Ver colección en Postman](https://www.postman.com/fco-gt/quickattendance/collection/32287192-871aaa97-840d-47f8-8d36-bf7e6f281611)
 * **Env**: Crea una variable `token` para almacenar el JWT recibido en el login.
 
 ---
