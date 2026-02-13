@@ -1,8 +1,8 @@
 # QuickAttendance - Enterprise Attendance Engine
 
 [![Go Version](https://img.shields.io/github/go-mod/go-version/tu-usuario/quickattendance-go)](https://golang.org/)
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Swagger Docs](https://img.shields.io/badge/API_Docs-Swagger-green.svg)](https://quickattendance-go-production.up.railway.app/swagger/index.html)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Swagger Docs](https://img.shields.io/badge/API_Docs-Swagger-blue.svg)](https://quickattendance-go-production.up.railway.app/swagger/index.html)
 
 **QuickAttendance** es un motor de gestión de asistencia de nivel empresarial, construido en **Go** y diseñado bajo principios de **Clean Architecture** y **Aislamiento Multi-tenant**. Optimizado para alta escalabilidad, seguridad robusta y procesamiento asíncrono.
 
