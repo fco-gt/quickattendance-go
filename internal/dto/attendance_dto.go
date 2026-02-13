@@ -8,14 +8,15 @@ import (
 )
 
 type MarkAttendanceRequest struct {
-	UserID    uuid.UUID               `json:"user_id"`
-	AgencyID  uuid.UUID               `json:"agency_id"`
-	Method    domain.AttendanceMethod `json:"method"`
-	Type      domain.AttendanceType   `json:"type"`
-	Notes     *string                 `json:"notes"`
-	IsRemote  *bool                   `json:"is_remote"`
-	Latitude  *float64                `json:"latitude"`
-	Longitude *float64                `json:"longitude"`
+	UserID        uuid.UUID               `json:"user_id"`
+	AgencyID      uuid.UUID               `json:"agency_id"`
+	Method        domain.AttendanceMethod `json:"method"`
+	Type          domain.AttendanceType   `json:"type"`
+	Notes         *string                 `json:"notes"`
+	IsRemote      *bool                   `json:"is_remote"`
+	Latitude      *float64                `json:"latitude"`
+	Longitude     *float64                `json:"longitude"`
+	RequesterRole domain.Role             `json:"-"`
 }
 
 type AttendanceResponse struct {

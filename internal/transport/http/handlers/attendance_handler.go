@@ -30,6 +30,7 @@ func (h *AttendanceHandler) Mark(c *gin.Context) {
 
 	// Security: Employees can only mark their own attendance
 	role := c.MustGet("role").(domain.Role)
+	req.RequesterRole = role
 	if role == domain.RoleEmployee {
 		req.UserID = userID
 	} else if req.UserID == uuid.Nil {
@@ -41,34 +42,34 @@ func (h *AttendanceHandler) Mark(c *gin.Context) {
 	res, err := h.svc.MarkAttendance(c.Request.Context(), &req)
 	if err != nil {
 		if err == domain.ErrAttendanceExists {
-			c.JSON(http.StatusConflict, gin.H{"error": "asistencia ya registrada para hoy"})
+			c.JSON(http.StatusConflict, gin.H{"error": "attendance already registered for today"})
 			return
 		}
 		if err == domain.ErrNoScheduleFound {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "no tienes un horario asignado para hoy"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "no schedule found for today"})
 			return
 		}
 		if err == domain.ErrManualNotAllowed {
-			c.JSON(http.StatusForbidden, gin.H{"error": "solo administradores pueden marcar asistencia manualmente"})
+			c.JSON(http.StatusForbidden, gin.H{"error": "only admins can mark attendance manually"})
 			return
 		}
 		if err == domain.ErrGeofenceViolation {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "estás fuera del rango permitido de tu domicilio"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "you are out of the allowed range from your home"})
 			return
 		}
 		if err == domain.ErrHomeLocationNotSet {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "no tienes configurada tu ubicación de domicilio para teletrabajo"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "home location not configured for remote marking"})
 			return
 		}
 		if err == domain.ErrUserNotFound {
-			c.JSON(http.StatusNotFound, gin.H{"error": "usuario no encontrado"})
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 			return
 		}
 		if err == domain.ErrInvalidAttendance {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "datos de asistencia inválidos"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid attendance data"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "error interno del servidor"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
 
@@ -97,7 +98,7 @@ func (h *AttendanceHandler) List(c *gin.Context) {
 
 	res, err := h.svc.GetAgencyAttendances(c.Request.Context(), agencyID, &params)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "error interno del servidor"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
 

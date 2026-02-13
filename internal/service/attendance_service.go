@@ -56,14 +56,14 @@ func (s *AttendanceService) MarkAttendance(ctx context.Context, req *dto.MarkAtt
 		}
 
 		if req.Method == domain.MethodManual {
-			if user.Role != domain.RoleAdmin && req.Method == domain.MethodManual {
+			if req.RequesterRole != domain.RoleAdmin {
 				return domain.ErrManualNotAllowed
 			}
 		}
 
 		if req.IsRemote != nil && *req.IsRemote {
 			if user.HomeLatitude == nil || user.HomeLongitude == nil || user.HomeRadiusMeters == nil {
-				return domain.ErrInvalidAttendance
+				return domain.ErrHomeLocationNotSet
 			}
 			if req.Latitude == nil || req.Longitude == nil {
 				return domain.ErrInvalidAttendance

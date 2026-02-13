@@ -126,7 +126,7 @@ Esta guía detalla los pasos para probar de manera integral la API de QuickAtten
 #### Listar Usuarios con Filtros
 *   **URL**: `/users/list?search=Juan&status=active&page=1&limit=10`
 #### Listar Asistencias por Fecha
-*   **URL**: `/attendance/list?start_date=2024-01-01&end_date=2024-12-31&status=late`
+*   **URL**: `/attendance/list?start_date=2026-02-13&end_date=2026-02-13&status=late`
 
 ---
 

@@ -126,7 +126,7 @@ This guide details the steps to comprehensively test the QuickAttendance API, fr
 #### List Users with Filters
 *   **URL**: `/users/list?search=John&status=active&page=1&limit=10`
 #### List Attendance by Date
-*   **URL**: `/attendance/list?start_date=2024-01-01&end_date=2024-12-31&status=late`
+*   **URL**: `/attendance/list?start_date=2026-02-13&end_date=2026-02-13&status=late`
 
 ---
 

@@ -150,11 +150,12 @@
       "name": "Users",
       "item": [
         {
-          "name": "Login",
+          "name": "Login (admin)",
           "event": [
             {
               "listen": "test",
               "script": {
+                "id": "5131cf7b-9e89-4b30-813d-41cf95dc90e3",
                 "exec": [
                   "var jsonData = pm.response.json();",
                   "if (jsonData.token) {",
@@ -162,7 +163,21 @@
                   "    console.log(\"Token guardado en variable de colección\");",
                   "}"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "868a9221-a0d1-4618-b731-f79f66a71eaa",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -175,7 +190,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@empresa.com\",\n  \"password\": \"password123\"\n}",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -196,7 +211,7 @@
           "response": []
         },
         {
-          "name": "Login (Employee)",
+          "name": "Login (employee)",
           "event": [
             {
               "listen": "test",
@@ -236,7 +251,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"empleado@empresa.com\",\n  \"password\": \"password123\"\n}",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -264,7 +279,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"empleado@empresa.com\",\n  \"first_name\": \"Juan\",\n  \"last_name\": \"Pérez\"\n}",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"first_name\": \"{{first_name}}\",\n  \"last_name\": \"{{last_name}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -295,7 +310,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"activation_token\": \"{{activation_token}}\",\n  \"password\": \"{{new_password}}\",\n  \"profile\": {\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Pérez\"\n  }\n}",
+              "raw": "{\n  \"activation_token\": \"{{activation_token}}\",\n  \"password\": \"{{new_password}}\",\n  \"profile\": {\n    \"first_name\": \"{{first_name}}\",\n    \"last_name\": \"{{last_name}}\"\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -386,7 +401,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "6404e6fe-2a2f-4915-8a80-703af09e1ea2"
+                  "value": "af325199-f545-410d-821f-6d4708643659"
                 }
               ]
             }
@@ -400,7 +415,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/users/list?search=Juan&status=active&page=1&limit=10",
+              "raw": "{{base_url}}/users/list?search={{name}}&status={{status}}&page=1&limit=10",
               "host": [
                 "{{base_url}}"
               ],
@@ -411,19 +426,23 @@
               "query": [
                 {
                   "key": "search",
-                  "value": "Juan"
+                  "value": "{{name}}",
+                  "uuid": "cfadd24e-12fb-428c-8337-9af73785dfbe"
                 },
                 {
                   "key": "status",
-                  "value": "active"
+                  "value": "{{status}}",
+                  "uuid": "a6d0b7a8-cee9-413d-adef-88e2d44cbb81"
                 },
                 {
                   "key": "page",
-                  "value": "1"
+                  "value": "1",
+                  "uuid": "203cb142-9d30-4f41-bc4f-bc0ae5df0a3d"
                 },
                 {
                   "key": "limit",
-                  "value": "10"
+                  "value": "10",
+                  "uuid": "8d6dcc69-c038-4ae2-8b86-e075441d12bf"
                 }
               ]
             }
@@ -434,7 +453,7 @@
           "name": "Delete User",
           "id": "f5ff363f-7e8c-40e6-9683-723a98abdfba",
           "request": {
-            "method": "GET",
+            "method": "DELETE",
             "header": [],
             "url": {
               "raw": "{{base_url}}/users/:id",
@@ -448,7 +467,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "6404e6fe-2a2f-4915-8a80-703af09e1ea2"
+                  "value": "32240035-23df-4f2a-a5b9-f93998507b8c"
                 }
               ]
             }
@@ -497,7 +516,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/schedules/applicable?date=2024-05-20&user_id=27efc044-ad0b-4df4-a11d-b336784115d8",
+              "raw": "{{base_url}}/schedules/applicable?date=2026-02-13&user_id={{user_id}}",
               "host": [
                 "{{base_url}}"
               ],
@@ -508,12 +527,12 @@
               "query": [
                 {
                   "key": "date",
-                  "value": "2024-05-20",
+                  "value": "2026-02-13",
                   "uuid": "a370b255-d1ce-4b68-af61-7e65c4f0957c"
                 },
                 {
                   "key": "user_id",
-                  "value": "27efc044-ad0b-4df4-a11d-b336784115d8",
+                  "value": "{{user_id}}",
                   "uuid": "e895db55-2ce4-40e4-9839-57bac94a5387"
                 }
               ]
@@ -646,7 +665,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"type\": \"in\",\n  \"method\": \"qr\",\n  \"latitude\": -34.6037,\n  \"longitude\": -58.3816,\n  \"notes\": \"Entrada vía QR\",\n  \"is_remote\": false\n}",
+              "raw": "{\n  \"type\": \"in\",\n  \"method\": \"qr\",\n  \"notes\": \"Entrada vía QR\",\n  \"is_remote\": false\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -702,7 +721,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"type\": \"in\",\n  \"method\": \"telework\",\n  \"latitude\": -34.6037,\n  \"longitude\": -58.3816,\n  \"is_remote\": true,\n  \"notes\": \"Marcando desde casa (Teletrabajo)\"\n}",
+              "raw": "{\n  \"type\": \"out\",\n  \"method\": \"telework\",\n  \"latitude\": -34.6037,\n  \"longitude\": -58.3816,\n  \"is_remote\": true,\n  \"notes\": \"Marcando desde casa (Teletrabajo)\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -730,7 +749,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": \"PASTE_USER_ID_HERE\",\n  \"type\": \"in\",\n  \"method\": \"manual\",\n  \"notes\": \"Marcación manual por el Admin\"\n}",
+              "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"type\": \"out\",\n  \"method\": \"manual\",\n  \"notes\": \"Marcación manual por el Admin\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -756,8 +775,17 @@
           "request": {
             "method": "GET",
             "header": [],
+            "body": {
+              "mode": "file",
+              "file": {},
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
-              "raw": "{{base_url}}/attendance/list?start_date=2024-01-01&end_date=2024-12-31&status=late&page=1&limit=10",
+              "raw": "{{base_url}}/attendance/list?start_date=2026-02-13&end_date=2026-02-13&status=late&page=1&limit=10",
               "host": [
                 "{{base_url}}"
               ],
@@ -768,23 +796,28 @@
               "query": [
                 {
                   "key": "start_date",
-                  "value": "2024-01-01"
+                  "value": "2026-02-13",
+                  "uuid": "892e4a65-45d6-4a2a-851b-5994d1830207"
                 },
                 {
                   "key": "end_date",
-                  "value": "2024-12-31"
+                  "value": "2026-02-13",
+                  "uuid": "5f677759-e8c7-4a25-a844-ac8e531bc019"
                 },
                 {
                   "key": "status",
-                  "value": "late"
+                  "value": "late",
+                  "uuid": "bd7e3ed9-0422-469b-a3d7-ba4b291db9d2"
                 },
                 {
                   "key": "page",
-                  "value": "1"
+                  "value": "1",
+                  "uuid": "71349821-8451-4f21-b523-8f48dfa3ab4c"
                 },
                 {
                   "key": "limit",
-                  "value": "10"
+                  "value": "10",
+                  "uuid": "a939b806-7792-4cea-b528-552d846cbb6e"
                 }
               ]
             }
@@ -807,13 +840,13 @@
   },
   "variable": [
     {
-      "id": "eff36169-db76-4488-a03b-d639f91420b1",
+      "id": "45aeaac3-e3e8-448e-b614-ef313ee0ed04",
       "key": "base_url",
       "value": "http://localhost:8080/api/v1",
       "type": "string"
     },
     {
-      "id": "1fc1ed62-b73f-4145-91c4-880e42c5ec62",
+      "id": "ea592bf6-46a2-4ad4-9182-559b42b9c91d",
       "key": "token",
       "value": "",
       "type": "string"
