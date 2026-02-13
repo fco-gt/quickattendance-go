@@ -1,0 +1,887 @@
+basePath: /api/v1
+definitions:
+  domain.Agency:
+    properties:
+      address:
+        type: string
+      createdAt:
+        type: string
+      domain:
+        type: string
+      id:
+        type: string
+      isActive:
+        type: boolean
+      name:
+        type: string
+      phone:
+        type: string
+      updatedAt:
+        type: string
+      users:
+        items:
+          $ref: '#/definitions/domain.User'
+        type: array
+    type: object
+  domain.Attendance:
+    properties:
+      agency:
+        $ref: '#/definitions/domain.Agency'
+      agencyID:
+        type: string
+      checkInTime:
+        description: Si se crea al entrar, es obligatorio
+        type: string
+      checkOutTime:
+        description: Puede ser NULL hasta que salgan
+        type: string
+      createdAt:
+        type: string
+      date:
+        type: string
+      id:
+        type: string
+      latitude:
+        description: Geolocation
+        format: float64
+        type: number
+      longitude:
+        format: float64
+        type: number
+      methodIn:
+        type: string
+      methodOut:
+        description: Opcional hasta el checkout
+        type: string
+      notes:
+        type: string
+      scheduleEntryTime:
+        type: string
+      scheduleExitTime:
+        type: string
+      status:
+        type: string
+      updatedAt:
+        type: string
+      user:
+        $ref: '#/definitions/domain.User'
+      userID:
+        type: string
+    type: object
+  domain.Role:
+    enum:
+    - admin
+    - employee
+    type: string
+    x-enum-varnames:
+    - RoleAdmin
+    - RoleEmployee
+  domain.Schedule:
+    properties:
+      agency:
+        $ref: '#/definitions/domain.Agency'
+      agencyID:
+        type: string
+      assignedUsers:
+        items:
+          $ref: '#/definitions/domain.User'
+        type: array
+      createdAt:
+        type: string
+      daysOfWeek:
+        description: 'Recomendación: String para evitar líos de drivers con arrays'
+        type: string
+      entryTimeMinutes:
+        type: integer
+      exitTimeMinutes:
+        type: integer
+      gracePeriodMinutes:
+        type: integer
+      id:
+        type: string
+      isDefault:
+        type: boolean
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  domain.Status:
+    enum:
+    - pending
+    - active
+    - inactive
+    type: string
+    x-enum-varnames:
+    - StatusPending
+    - StatusActive
+    - StatusInactive
+  domain.User:
+    properties:
+      activationCode:
+        type: string
+      agency:
+        $ref: '#/definitions/domain.Agency'
+      agencyID:
+        type: string
+      codeExpiry:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      homeLatitude:
+        format: float64
+        type: number
+      homeLongitude:
+        format: float64
+        type: number
+      homeRadiusMeters:
+        type: integer
+      id:
+        type: string
+      lastName:
+        type: string
+      passwordHash:
+        type: string
+      role:
+        $ref: '#/definitions/domain.Role'
+      status:
+        $ref: '#/definitions/domain.Status'
+      updatedAt:
+        type: string
+    type: object
+  dto.ActivateProfile:
+    properties:
+      first_name:
+        type: string
+      last_name:
+        type: string
+    required:
+    - first_name
+    type: object
+  dto.ActivateUserRequest:
+    properties:
+      activation_token:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      profile:
+        $ref: '#/definitions/dto.ActivateProfile'
+    required:
+    - activation_token
+    - password
+    - profile
+    type: object
+  dto.AgencyResponse:
+    properties:
+      address:
+        type: string
+      created_at:
+        type: string
+      domain:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      phone:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.CreateScheduleRequest:
+    properties:
+      assigned_users_ids:
+        items:
+          type: string
+        type: array
+      days_of_week:
+        items:
+          type: integer
+        type: array
+      entry_time_minutes:
+        type: integer
+      exit_time_minutes:
+        type: integer
+      grace_period_minutes:
+        type: integer
+      is_default:
+        type: boolean
+      name:
+        type: string
+    type: object
+  dto.InviteUserRequest:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+    required:
+    - email
+    - first_name
+    type: object
+  dto.LoginUserRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.MarkAttendanceRequest:
+    properties:
+      agency_id:
+        type: string
+      is_remote:
+        type: boolean
+      latitude:
+        type: number
+      longitude:
+        type: number
+      method:
+        type: string
+      notes:
+        type: string
+      type:
+        type: string
+      user_id:
+        type: string
+    type: object
+  dto.RegisterAgencyRequest:
+    properties:
+      address:
+        type: string
+      admin_email:
+        type: string
+      domain:
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      phone:
+        type: string
+    required:
+    - admin_email
+    - domain
+    - name
+    - password
+    type: object
+  dto.UpdateAgencyRequest:
+    properties:
+      address:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+  dto.UpdateScheduleRequest:
+    properties:
+      assigned_users_ids:
+        items:
+          type: string
+        type: array
+      days_of_week:
+        items:
+          type: integer
+        type: array
+      entry_time_minutes:
+        type: integer
+      exit_time_minutes:
+        type: integer
+      grace_period_minutes:
+        type: integer
+      is_default:
+        type: boolean
+      name:
+        type: string
+    type: object
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: API for managing attendance and schedules for agencies.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: QuickAttendance API
+  version: "1.0"
+paths:
+  /agencies:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new agency and its first admin user.
+      parameters:
+      - description: Agency registration details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterAgencyRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.AgencyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a new agency
+      tags:
+      - agencies
+    put:
+      consumes:
+      - application/json
+      description: Updates the details of the agency (Admin only).
+      parameters:
+      - description: Agency updated details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateAgencyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Agency'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update agency details
+      tags:
+      - agencies
+  /attendance/list:
+    get:
+      description: Returns a list of attendance records for the agency. Employees
+        can only see their own records.
+      parameters:
+      - description: User ID filter (Admins only)
+        in: query
+        name: user_id
+        type: string
+      - description: Date filter (YYYY-MM-DD)
+        in: query
+        name: date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Attendance'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List attendance records
+      tags:
+      - attendance
+  /attendance/mark:
+    post:
+      consumes:
+      - application/json
+      description: Marks user attendance for today. Geolocation check is applied for
+        remote work.
+      parameters:
+      - description: Attendance details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.MarkAttendanceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Attendance'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Mark attendance
+      tags:
+      - attendance
+  /schedules:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new work schedule for the agency (Admin only).
+      parameters:
+      - description: Schedule details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateScheduleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Schedule'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new schedule
+      tags:
+      - schedules
+  /schedules/{id}:
+    delete:
+      description: Deletes a schedule from the agency (Admin only).
+      parameters:
+      - description: Schedule ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a schedule
+      tags:
+      - schedules
+    get:
+      description: Returns a specific schedule details.
+      parameters:
+      - description: Schedule ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Schedule'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get schedule by ID
+      tags:
+      - schedules
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing schedule (Admin only).
+      parameters:
+      - description: Schedule ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateScheduleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Schedule'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update a schedule
+      tags:
+      - schedules
+  /schedules/applicable:
+    get:
+      description: Returns the schedule that applies to a user on a specific date.
+      parameters:
+      - description: User ID (defaults to current user)
+        in: query
+        name: user_id
+        type: string
+      - description: Date (YYYY-MM-DD)
+        in: query
+        name: date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Schedule'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get applicable schedule for a date
+      tags:
+      - schedules
+  /schedules/list:
+    get:
+      description: Returns a list of schedules for the agency.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Schedule'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List all schedules
+      tags:
+      - schedules
+  /users/activate:
+    post:
+      consumes:
+      - application/json
+      description: Activates a user account using the code sent via email. Returns
+        JWT token.
+      parameters:
+      - description: Activation code and credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ActivateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Activate a user account
+      tags:
+      - users
+  /users/invite:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user record and sends an invitation email (Admin
+        only)
+      parameters:
+      - description: Invitation details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.InviteUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Invite a new user to the agency
+      tags:
+      - users
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user with email and password. Returns JWT token.
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Login user
+      tags:
+      - users
+  /users/me:
+    get:
+      description: Returns the profile of the currently authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get current user profile
+      tags:
+      - users
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

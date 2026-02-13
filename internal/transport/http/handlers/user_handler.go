@@ -18,6 +18,20 @@ func NewUserHandler(svc *service.UserService) *UserHandler {
 	return &UserHandler{svc: svc}
 }
 
+// Invite godoc
+// @Summary Invite a new user to the agency
+// @Description Creates a new user record and sends an invitation email (Admin only)
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body dto.InviteUserRequest true "Invitation details"
+// @Success 201 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 403 {object} map[string]string
+// @Failure 409 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Security BearerAuth
+// @Router /users/invite [post]
 func (h *UserHandler) Invite(c *gin.Context) {
 	agencyId := c.MustGet("agency_id").(uuid.UUID)
 	if agencyId == uuid.Nil {
@@ -43,6 +57,18 @@ func (h *UserHandler) Invite(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "user invited successfully"})
 }
 
+// Activate godoc
+// @Summary Activate a user account
+// @Description Activates a user account using the code sent via email. Returns JWT token.
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body dto.ActivateUserRequest true "Activation code and credentials"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]string
+// @Failure 409 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /users/activate [post]
 func (h *UserHandler) Activate(c *gin.Context) {
 	var req dto.ActivateUserRequest
 
@@ -68,6 +94,17 @@ func (h *UserHandler) Activate(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": res.Token, "user": res.User})
 }
 
+// Login godoc
+// @Summary Login user
+// @Description Authenticate user with email and password. Returns JWT token.
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body dto.LoginUserRequest true "Login credentials"
+// @Success 200 {object} map[string]interface{}
+// @Failure 401 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /users/login [post]
 func (h *UserHandler) Login(c *gin.Context) {
 	var req dto.LoginUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -88,6 +125,17 @@ func (h *UserHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": res.Token, "user": res.User})
 }
 
+// GetMe godoc
+// @Summary Get current user profile
+// @Description Returns the profile of the currently authenticated user.
+// @Tags users
+// @Produce json
+// @Success 200 {object} domain.User
+// @Failure 403 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Security BearerAuth
+// @Router /users/me [get]
 func (h *UserHandler) GetMe(c *gin.Context) {
 	userID := c.MustGet("user_id").(uuid.UUID)
 	agencyID := c.MustGet("agency_id").(uuid.UUID)

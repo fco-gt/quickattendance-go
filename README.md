@@ -1,57 +1,72 @@
-# QuickAttendance - Backend Go
+# QuickAttendance - Enterprise Attendance Engine
 
-QuickAttendance es una plataforma profesional de gestión de asistencia de empleados diseñada para arquitecturas modernas y escalables. Este repositorio contiene el core del backend migrado íntegramente a **Go**, optimizado para el rendimiento, seguridad multi-tenant y facilidad de despliegue con Docker.
+[![Go Version](https://img.shields.io/github/go-mod/go-version/tu-usuario/quickattendance-go)](https://golang.org/)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Swagger Docs](https://img.shields.io/badge/API_Docs-Swagger-green.svg)](https://quickattendance-go-production.up.railway.app/swagger/index.html)
+
+**QuickAttendance** es un motor de gestión de asistencia de nivel empresarial, construido en **Go** y diseñado bajo principios de **Clean Architecture** y **Aislamiento Multi-tenant**. Optimizado para alta escalabilidad, seguridad robusta y procesamiento asíncrono.
 
 ---
 
 > [!NOTE]  
-> Esta es la versión en español de la documentación. Para la versión en inglés, consulta [README_ENG.md](./README_ENG.md).
+> **English version**: Check [README_ENG.md](./README_ENG.md) for documentation in English.
 
 ---
 
-### Características Principales
+## Arquitectura del Sistema
 
-- **Arquitectura Multi-tenant**: Aislamiento total de datos entre diferentes agencias/empresas.
-- **Gestión de Horarios Inteligente**: Configuración de turnos con periodos de gracia y asignaciones dinámicas por usuario.
-- **Control de Asistencia**: Registro de entradas/salidas con validación de geolocalización y múltiples métodos (QR, NFC, Manual, Teletrabajo).
-- **Procesamiento Asíncrono**: Invitaciones y notificaciones gestionadas mediante **RabbitMQ** para garantizar una respuesta rápida de la API y alta disponibilidad.
-- **Filtrado Avanzado**: Paginación nativa y búsqueda inteligente en todos los listados (Usuarios, Asistencias, Horarios).
-- **Seguridad Robusta**: Autenticación basada en JWT, hashing de contraseñas con bcrypt y control de acceso basado en roles (RBAC).
-- **Containerización**: Listo para producción con Docker y Docker Compose.
+El sistema utiliza un diseño desacoplado donde la API maneja las peticiones críticas y delega tareas pesadas (como notificaciones) a un **Worker** independiente vía **RabbitMQ**.
 
-### Stack Tecnológico
+```mermaid
+graph TD
+    Client[📱 Cliente / Postman] -->|HTTP/REST| API[🚀 API Server - Gin]
+    API -->|Persistencia| DB[(🐘 PostgreSQL)]
+    API -->|Evento de Invitación| RMQ(🐇 RabbitMQ)
+    RMQ -->|Mensaje| Worker[⚙️ Background Worker]
+    Worker -->|Enviando Email| SMTP[📧 Servicio de Correo]
+    
+    subgraph "Core de Ingeniería"
+    API
+    Worker
+    end
+```
 
-- **Lenguaje**: Go (Golang) 1.25+
-- **Framework Web**: Gin Gonic
-- **ORM**: GORM (PostgreSQL)
-- **Mensajería**: RabbitMQ (AMQP 0.9.1)
-- **Autenticación**: JWT (JSON Web Tokens)
-- **Logger**: Estructurado con `slog`
-- **Infraestructura**: Docker & Docker Compose
+## Capacidades de Ingeniería
 
-### Instalación y Uso
+*   **Multi-tenancy Nativo**: Aislamiento lógico de datos a nivel de base de datos. Cada agencia gestiona sus propios usuarios, horarios y asistencias de forma independiente.
+*   **Procesamiento Asíncrono**: Uso de RabbitMQ para manejar flujos de invitaciones y notificaciones, asegurando latencias bajas en la API.
+*   **Validación de Geofencing**: Las marcas de asistencia remotas validan la ubicación del empleado contra su domicilio registrado mediante cálculos de distancia geodésica.
+*   **Security-First**: Implementación de JWT con expiración configurable, Password Hashing con Bcrypt y Middleware de Control de Acceso por Roles (RBAC).
+*   **Observabilidad**: Logs estructurados con la librería estándar `slog` de Go, facilitando la integración con stacks de monitoreo modernos.
 
-1.  **Clonar el repositorio**:
-    ```bash
-    git clone https://github.com/tu-usuario/quickattendance-go.git
-    cd quickattendance-go
-    ```
-2.  **Configurar Variables de Entorno**:
-    Copia el archivo `.env.example` a `.env` y ajusta tus credenciales, incluyendo la URL de `RABBITMQ_URL`.
-3.  **Levantar con Docker**:
+## Stack Tecnológico
+
+| Componente | Tecnología |
+| :--- | :--- |
+| **Lenguaje** | Go (Golang) 1.25+ |
+| **API Framework** | Gin Gonic |
+| **Persistencia** | PostgreSQL + GORM |
+| **Broker de Mensajería** | RabbitMQ |
+| **Doc interactiva** | Swagger (OpenAPI 3.0) |
+| **Containerización** | Docker & Docker Compose |
+
+## Inicio Rápido
+
+1.  **Levantar el ecosistema completo**:
     ```bash
     docker-compose up --build
     ```
-    Esto levantará la **API**, el **Worker**, la base de datos PostgreSQL y el broker de RabbitMQ de forma automática.
-4.  **Pruebas de API**:
-    Puedes ver y utilizar el entorno de pruebas de la API desde esta colección pública de Postman:
-    [QuickAttendance Public Collection](https://www.postman.com/fco-gt/quickattendance/collection/32287192-4c116f57-2c57-4903-b835-34a4e7911073/?action=share&creator=32287192&active-environment=32287192-04a5f77e-97db-4782-996e-24692f0b3443)
+    *Esto iniciará: API Server, Background Worker, DB y RabbitMQ.*
 
-El servidor principal estará disponible en `http://localhost:8080`.
+2.  **Explorar la API**:
+    - **Swagger UI (Live)**: [https://quickattendance-go-production.up.railway.app/swagger/index.html](https://quickattendance-go-production.up.railway.app/swagger/index.html)
+    - **Postman**: [Public Collection Link](https://www.postman.com/fco-gt/quickattendance/collection/32287192-4c116f57-2c57-4903-b835-34a4e7911073/)
 
-### Documentación Adicional
+## Documentación de Ingeniería
 
-- [Guía de Pruebas de API (Step-by-Step)](./API_TESTING.md)
-- [Esquema de Base de Datos](./docs/database_schema.md)
+- [Guía Paso a Paso de Testing de API](./API_TESTING.md)
+- [Diseño del Modelo de Datos](./docs/database_schema.md)
+- [Configuración de Despliegue Avanzado (Docker)](./Dockerfile)
 
 ---
+*Desarrollado como una pieza de ingeniería de software robusta para la gestión de capital humano.*

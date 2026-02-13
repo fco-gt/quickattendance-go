@@ -1,66 +1,72 @@
-# QuickAttendance - Go Backend
+# QuickAttendance - Enterprise Attendance Engine
 
-QuickAttendance is a professional employee attendance management platform designed for modern and scalable architectures. This repository contains the backend core fully migrated to **Go**, optimized for performance, multi-tenant security, and easy deployment with Docker.
+[![Go Version](https://img.shields.io/github/go-mod/go-version/tu-username/quickattendance-go)](https://golang.org/)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Swagger Docs](https://img.shields.io/badge/API_Docs-Swagger-green.svg)](https://quickattendance-go-production.up.railway.app/swagger/index.html)
+
+**QuickAttendance** is an enterprise-grade attendance management engine, built in **Go** and designed under **Clean Architecture** and **Multi-tenant Isolation** principles. Optimized for high scalability, robust security, and asynchronous processing.
 
 ---
 
 > [!NOTE]  
-> This is the English version of the documentation. For the Spanish version, please refer to [README.md](./README.md).
+> **Versión en español**: Consulta [README.md](./README.md) para la documentación en español.
 
 ---
 
-### Key Features
+## System Architecture
 
-- **Multi-tenant Architecture**: Total data isolation between different agencies/companies.
-- **Smart Schedule Management**: Shift configuration with grace periods and dynamic per-user assignments.
-- **Attendance Control**: Check-in/out records with geolocation validation and multiple methods (QR, NFC, Manual, Remote).
-- **Asynchronous Notifications**: Invitation emails processed asynchronously via **RabbitMQ** to ensure high availability and responsiveness.
-- **Advanced Filtering**: Native pagination and smart search across all lists (Users, Attendance, Schedules).
-- **Robust Security**: JWT-based authentication, bcrypt password hashing, and Role-Based Access Control (RBAC).
-- **Containerization**: Production-ready with Docker and Docker Compose.
+The system uses a decoupled design where the API handles critical requests and delegates heavy tasks (such as notifications) to an independent **Worker** via **RabbitMQ**.
 
-### Tech Stack
+```mermaid
+graph TD
+    Client[📱 Client / Postman] -->|HTTP/REST| API[🚀 API Server - Gin]
+    API -->|Persistence| DB[(🐘 PostgreSQL)]
+    API -->|Invitation Event| RMQ(🐇 RabbitMQ)
+    RMQ -->|Message| Worker[⚙️ Background Worker]
+    Worker -->|Sending Email| SMTP[📧 Email Service]
+    
+    subgraph "Engineering Core"
+    API
+    Worker
+    end
+```
 
-- **Language**: Go (Golang) 1.25+
-- **Web Framework**: Gin Gonic
-- **ORM**: GORM (PostgreSQL)
-- **Messaging**: RabbitMQ (AMQP 0.9.1)
-- **Authentication**: JWT (JSON Web Tokens)
-- **Logger**: Structured with `slog`
-- **Infrastructure**: Docker & Docker Compose
+## Engineering Capabilities
 
-### Architecture Overview
+*   **Native Multi-tenancy**: Database-level logical data isolation. Each agency manages its own users, schedules, and attendance independently.
+*   **Asynchronous Processing**: Uses RabbitMQ to handle invitation and notification flows, ensuring low API latency.
+*   **Geofencing Validation**: Remote attendance marking validates employee location against their registered address using geodesic distance calculations.
+*   **Security-First**: JWT implementation with configurable expiration, Bcrypt password hashing, and Role-Based Access Control (RBAC) middleware.
+*   **Observability**: Structured logs using Go's standard `slog` library, facilitating integration with modern monitoring stacks.
 
-The system follows a modular monolith approach with a clear separation of concerns:
-- **Transport Layer**: HTTP Handlers using Gin.
-- **Service Layer**: Business logic and orchestration.
-- **Domain Layer**: Core entities and repository interfaces.
-- **Repository Layer**: Data access implementation (GORM).
-- **Messaging Layer**: Asynchronous task producers (RabbitMQ).
+## Tech Stack
 
-### Setup and Usage
+| Component | Technology |
+| :--- | :--- |
+| **Language** | Go (Golang) 1.25+ |
+| **API Framework** | Gin Gonic |
+| **Persistence** | PostgreSQL + GORM |
+| **Messaging Broker** | RabbitMQ |
+| **Interactive Docs** | Swagger (OpenAPI 3.0) |
+| **Containerization** | Docker & Docker Compose |
 
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/your-username/quickattendance-go.git
-    cd quickattendance-go
-    ```
-2.  **Environment Variables**:
-    Copy `.env.example` to `.env` and adjust your credentials, including the `RABBITMQ_URL`.
-3.  **Run with Docker**:
+## Quick Start
+
+1.  **Start the complete ecosystem**:
     ```bash
     docker-compose up --build
     ```
-    This will start the **API**, the **Worker**, the PostgreSQL database, and the RabbitMQ broker automatically.
-4.  **API Testing**:
-    You can view and use the API testing environment from this public Postman collection:
-    [QuickAttendance Public Collection](https://www.postman.com/fco-gt/quickattendance/collection/32287192-4c116f57-2c57-4903-b835-34a4e7911073/?action=share&creator=32287192&active-environment=32287192-04a5f77e-97db-4782-996e-24692f0b3443)
+    *This will start: API Server, Background Worker, DB, and RabbitMQ.*
 
-The API will be reachable at `http://localhost:8080`.
+2.  **Explore the API**:
+    - **Swagger UI (Live)**: [https://quickattendance-go-production.up.railway.app/swagger/index.html](https://quickattendance-go-production.up.railway.app/swagger/index.html)
+    - **Postman**: [Public Collection Link](https://www.postman.com/fco-gt/quickattendance/collection/32287192-4c116f57-2c57-4903-b835-34a4e7911073/)
 
-### Additional Documentation
+## Engineering Documentation
 
-- [API Testing Guide (Step-by-Step)](./API_TESTING_ENG.md)
-- [Database Schema](./docs/database_schema.md)
+- [Step-by-Step API Testing Guide](./API_TESTING_ENG.md)
+- [Data Model Design](./docs/database_schema.md)
+- [Advanced Deployment Configuration (Docker)](./Dockerfile)
 
 ---
+*Developed as a robust piece of software engineering for human capital management.*

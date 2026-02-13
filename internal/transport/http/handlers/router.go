@@ -7,6 +7,8 @@ import (
 	"quickattendance-go/pkg/security"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"golang.org/x/time/rate"
 )
 
@@ -44,6 +46,9 @@ func NewRouter(
 
 		c.Next()
 	})
+
+	// Swagger
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	v1 := r.Group("/api/v1")
 	{

@@ -19,6 +19,19 @@ func NewScheduleHandler(svc *service.ScheduleService) *ScheduleHandler {
 	return &ScheduleHandler{svc: svc}
 }
 
+// Create godoc
+// @Summary Create a new schedule
+// @Description Creates a new work schedule for the agency (Admin only).
+// @Tags schedules
+// @Accept json
+// @Produce json
+// @Param request body dto.CreateScheduleRequest true "Schedule details"
+// @Success 201 {object} domain.Schedule
+// @Failure 400 {object} map[string]string
+// @Failure 409 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Security BearerAuth
+// @Router /schedules [post]
 func (h *ScheduleHandler) Create(c *gin.Context) {
 	agencyID := c.MustGet("agency_id").(uuid.UUID)
 	var req dto.CreateScheduleRequest
@@ -41,6 +54,17 @@ func (h *ScheduleHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, res)
 }
 
+// GetByID godoc
+// @Summary Get schedule by ID
+// @Description Returns a specific schedule details.
+// @Tags schedules
+// @Produce json
+// @Param id path string true "Schedule ID"
+// @Success 200 {object} domain.Schedule
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Security BearerAuth
+// @Router /schedules/{id} [get]
 func (h *ScheduleHandler) GetByID(c *gin.Context) {
 	idStr := c.Param("id")
 	scheduleID, err := uuid.Parse(idStr)
@@ -60,6 +84,15 @@ func (h *ScheduleHandler) GetByID(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// List godoc
+// @Summary List all schedules
+// @Description Returns a list of schedules for the agency.
+// @Tags schedules
+// @Produce json
+// @Success 200 {array} domain.Schedule
+// @Failure 500 {object} map[string]string
+// @Security BearerAuth
+// @Router /schedules/list [get]
 func (h *ScheduleHandler) List(c *gin.Context) {
 	agencyID := c.MustGet("agency_id").(uuid.UUID)
 
@@ -79,6 +112,18 @@ func (h *ScheduleHandler) List(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// GetApplicable godoc
+// @Summary Get applicable schedule for a date
+// @Description Returns the schedule that applies to a user on a specific date.
+// @Tags schedules
+// @Produce json
+// @Param user_id query string false "User ID (defaults to current user)"
+// @Param date query string true "Date (YYYY-MM-DD)"
+// @Success 200 {object} domain.Schedule
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Security BearerAuth
+// @Router /schedules/applicable [get]
 func (h *ScheduleHandler) GetApplicable(c *gin.Context) {
 	agencyID := c.MustGet("agency_id").(uuid.UUID)
 
@@ -113,6 +158,20 @@ func (h *ScheduleHandler) GetApplicable(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// Update godoc
+// @Summary Update a schedule
+// @Description Updates an existing schedule (Admin only).
+// @Tags schedules
+// @Accept json
+// @Produce json
+// @Param id path string true "Schedule ID"
+// @Param request body dto.UpdateScheduleRequest true "Updated details"
+// @Success 200 {object} domain.Schedule
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Failure 409 {object} map[string]string
+// @Security BearerAuth
+// @Router /schedules/{id} [put]
 func (h *ScheduleHandler) Update(c *gin.Context) {
 	idStr := c.Param("id")
 	scheduleID, err := uuid.Parse(idStr)
@@ -145,6 +204,18 @@ func (h *ScheduleHandler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// Delete godoc
+// @Summary Delete a schedule
+// @Description Deletes a schedule from the agency (Admin only).
+// @Tags schedules
+// @Produce json
+// @Param id path string true "Schedule ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 403 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Security BearerAuth
+// @Router /schedules/{id} [delete]
 func (h *ScheduleHandler) Delete(c *gin.Context) {
 	idStr := c.Param("id")
 	scheduleID, err := uuid.Parse(idStr)

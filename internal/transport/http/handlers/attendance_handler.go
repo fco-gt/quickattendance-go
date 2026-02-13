@@ -18,6 +18,20 @@ func NewAttendanceHandler(svc *service.AttendanceService) *AttendanceHandler {
 	return &AttendanceHandler{svc: svc}
 }
 
+// Mark godoc
+// @Summary Mark attendance
+// @Description Marks user attendance for today. Geolocation check is applied for remote work.
+// @Tags attendance
+// @Accept json
+// @Produce json
+// @Param request body dto.MarkAttendanceRequest true "Attendance details"
+// @Success 200 {object} domain.Attendance
+// @Failure 400 {object} map[string]string
+// @Failure 403 {object} map[string]string
+// @Failure 409 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Security BearerAuth
+// @Router /attendance/mark [post]
 func (h *AttendanceHandler) Mark(c *gin.Context) {
 	agencyID := c.MustGet("agency_id").(uuid.UUID)
 	userID := c.MustGet("user_id").(uuid.UUID)
@@ -76,6 +90,18 @@ func (h *AttendanceHandler) Mark(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// List godoc
+// @Summary List attendance records
+// @Description Returns a list of attendance records for the agency. Employees can only see their own records.
+// @Tags attendance
+// @Produce json
+// @Param user_id query string false "User ID filter (Admins only)"
+// @Param date query string false "Date filter (YYYY-MM-DD)"
+// @Success 200 {array} domain.Attendance
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Security BearerAuth
+// @Router /attendance/list [get]
 func (h *AttendanceHandler) List(c *gin.Context) {
 	agencyID := c.MustGet("agency_id").(uuid.UUID)
 
